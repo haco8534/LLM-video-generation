@@ -150,7 +150,7 @@ class PixabayFetcher:
     def __init__(self, api_key: str):
         self.api_key = api_key
 
-    def search_first_url(self, query: str) -> str | None:
+    def search_first_url(self,idx: int, query: str) -> str | None:
         """query で最初にヒットした画像 URL (webformatURL) を返す"""
         params = {
             "key": self.api_key,
@@ -161,6 +161,7 @@ class PixabayFetcher:
         r = requests.get(self._ENDPOINT, params=params, timeout=10)
         r.raise_for_status()
         hits = r.json().get("hits", [])
+
         return hits[0]["webformatURL"] if hits else None
 
 
@@ -171,7 +172,7 @@ class PixabayFetcher:
 
 class ImageSetService:
     """
-    台本 → 画像 URL 一覧 をワンショットで行う高レベルサービス
+    台本 → 画像 URL 一覧 をワンショットで行う
     """
 
     def __init__(
@@ -193,7 +194,7 @@ class ImageSetService:
     def scenario_to_images(self, scenario: dict) -> List[str | None]:
         prompts = extract_segment_prompts(scenario)
         keywords = self.keyword_gen.generate(prompts)
-        return [self.pixabay.search_first_url(k) for k in keywords]
+        return [self.pixabay.search_first_url(idx,k) for idx, k in enumerate(keywords,1)]
 
 
 if __name__ == "__main__":

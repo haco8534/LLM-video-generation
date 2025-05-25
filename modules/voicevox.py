@@ -70,7 +70,7 @@ class ReadGenerator:
             ]
     '''
 
-    def __init__(self, model: str = "gpt-4.1-mini"):
+    def __init__(self, model: str = "gpt-4.1"):
         load_dotenv()
         self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         self.model = model
@@ -244,8 +244,8 @@ if __name__ == "__main__":
 
     # ② キャラクター → VoiceVox スタイル対応
     char_style = {
-        "アオイ": "四国めたん/ノーマル",
-        "カイ": "ずんだもん/ノーマル",
+        "1": "四国めたん/ノーマル",
+        "2": "ずんだもん/ノーマル",
     }
 
     # ③ 共通 TTS パラメータ

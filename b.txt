@@ -1,0 +1,221 @@
+{
+  "segments": [
+    {
+      "id": 1,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "surprised",
+        "text": "ねえカイ、宇宙って形があるの\nかな？丸いとか四角いとか。"
+      }
+    },
+    {
+      "id": 2,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal1",
+        "text": "面白い質問だね、アオイ。\n実は宇宙の形は数学で研究されているんだよ。"
+      }
+    },
+    {
+      "id": 3,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal2",
+        "text": "へえ、数学で宇宙の形がわかるの？\nちょっと知りたいな。"
+      }
+    },
+    {
+      "id": 4,
+      "type": "topic",
+      "title": "宇宙の形と幾何学"
+    },
+    {
+      "id": 5,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "surprised",
+        "text": "宇宙の形は具体的にどうやって\n決めるの？"
+      }
+    },
+    {
+      "id": 6,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal3",
+        "text": "宇宙は「多様体」という数学の形の\n考え方で表されるんだ。"
+      }
+    },
+    {
+      "id": 7,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "例えば、宇宙は平らだったり、球の\nように丸かったりする可能性があるよ。"
+      }
+    },
+    {
+      "id": 8,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "多様体？それって何だか難しそう\nだけど、例はわかりやすいね。"
+      }
+    },
+    {
+      "id": 9,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "うん、例えば地球は表面が丸いけど、\n広がりは２次元の多様体だよ。"
+      }
+    },
+    {
+      "id": 10,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "なるほど。宇宙はもっと高次元の\n多様体ってこと？"
+      }
+    },
+    {
+      "id": 11,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "そう。宇宙は3次元の多様体として\n考えられているんだ。"
+      }
+    },
+    {
+      "id": 12,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "数学のおかげで宇宙の形を\nイメージできるんだね。"
+      }
+    },
+    {
+      "id": 13,
+      "type": "topic",
+      "title": "ポアンカレ予想と宇宙のつながり"
+    },
+    {
+      "id": 14,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "surprised",
+        "text": "ポアンカレ予想って名前は聞いた\nことあるけど、何？"
+      }
+    },
+    {
+      "id": 15,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "ポアンカレ予想は、ある条件の3次元\n多様体は球の形と同じと証明した話だよ。"
+      }
+    },
+    {
+      "id": 16,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "surprised",
+        "text": "それが宇宙とどう関係あるの？"
+      }
+    },
+    {
+      "id": 17,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal3",
+        "text": "宇宙が閉じていて有限なら、形は\nポアンカレ予想のように単純かもしれないんだ。"
+      }
+    },
+    {
+      "id": 18,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "つまり宇宙の大きな形のヒントを数学\nで見つけられるということ。"
+      }
+    },
+    {
+      "id": 19,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "surprised",
+        "text": "へえ、数学の証明が宇宙の形の手がか\nりになるなんてすごい！"
+      }
+    },
+    {
+      "id": 20,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal1",
+        "text": "しかも、この予想は2010年代に解決\nされて、宇宙論にも影響を与えたんだ。"
+      }
+    },
+    {
+      "id": 21,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal2",
+        "text": "なるほど、最新の数学が宇宙の秘密に\n迫っているんだね！"
+      }
+    },
+    {
+      "id": 22,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal3",
+        "text": "今日のポイントは、宇宙の形は数学の\n多様体で表されること。"
+      }
+    },
+    {
+      "id": 23,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "そして、ポアンカレ予想の解決が宇宙の\n形理解に役立っていることだね。"
+      }
+    },
+    {
+      "id": 24,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "数学を使うと、目に見えない宇宙の形も\nイメージできるんだな。"
+      }
+    },
+    {
+      "id": 25,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal2",
+        "text": "私も数学で宇宙の謎をもっと知りたいと\n思ったよ。"
+      }
+    }
+  ]
+}

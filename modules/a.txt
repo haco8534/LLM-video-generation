@@ -1,138 +1,288 @@
 {
-  "segments": [
+  "入"
+    },segments": [
     {
       "id": 1,
-      "type": "dialogue",
-      "script": {
-        "speaker": "アオイ",
-        "text": "ねえカイ、最近プログラミングの勉強を始めたいって思ってるんだけど、PythonとかJavascriptみたいな高級言語から入る人が多いよね。でも、なんでわざわざ難しいって言われるC言語から始めるべきっていう意見もあるの？"
-      }
-    },
+      "type": "topic",
+      "title": "導
     {
       "id": 2,
       "type": "dialogue",
       "script": {
-        "speaker": "カイ",
-        "text": "いい質問だね、アオイ。確かに今はPythonやJavascriptが人気で、すぐに結果が見えるから学びやすいよね。でもC言語を最初に学ぶメリットもあって、それを理解するとプログラミングの基礎がしっかり身につくんだ。"
+        "speaker": "1",
+        "face": "normal1",
+        "text": "ねえカイ、宇宙ってどんな形を\nしているの？"
       }
     },
     {
       "id": 3,
-      "type": "topic",
-      "title": "サブトピック1：C言語が教えてくれる「コンピュータの仕組み」"
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal1",
+        "text": "いい質問だね、アオイ。宇宙の形は\n数学で考えられているんだよ。"
+      }
     },
     {
       "id": 4,
       "type": "dialogue",
       "script": {
-        "speaker": "アオイ",
-        "text": "具体的には、C言語から学ぶとどんな良いことがあるの？"
+        "speaker": "1",
+        "face": "normal2",
+        "text": "数学で宇宙の形がわかるなんて、不\n思議！教えてほしいな。"
       }
     },
     {
       "id": 5,
-      "type": "dialogue",
-      "script": {
-        "speaker": "カイ",
-        "text": "まず、C言語はコンピュータのメモリやCPUの動きをかなり近いところで扱う言語なんだ。たとえば、変数の宣言やポインタという仕組みを通じて、プログラムがメモリのどこを使っているのかを理解できる。これがPythonのような言語ではあまり見えにくい部分なんだよ。"
-      }
+      "type": "topic",
+      "title": "本編"
     },
     {
       "id": 6,
       "type": "dialogue",
       "script": {
-        "speaker": "アオイ",
-        "text": "ポインタってよく聞くけど、どうしてそれが大事なの？"
+        "speaker": "1",
+        "face": "normal3",
+        "text": "まず、宇宙の形って具体的にどうい\nうこと？"
       }
     },
     {
       "id": 7,
       "type": "dialogue",
       "script": {
-        "speaker": "カイ",
-        "text": "ポインタはメモリのアドレスを扱うもので、プログラムがデータをどのように管理しているかを直感的に学べるんだ。例えば最新のIoTデバイスや組み込みシステムでは、メモリ制約が厳しいからC言語の知識が役立つよ。"
+        "speaker": "2",
+        "face": "normal4",
+        "text": "宇宙の形は「空間の曲がり方」を意味\nするよ。例えば、平らな平面や球の表面みたいにね。"
       }
     },
     {
       "id": 8,
       "type": "dialogue",
       "script": {
-        "speaker": "アオイ",
-        "text": "なるほど、そういうところがPythonには隠れているから見えにくいんだね。"
+        "speaker": "1",
+        "face": "surprised",
+        "text": "なるほど。宇宙が平らとか丸いとか、そ\nんな感じ？"
       }
     },
     {
       "id": 9,
-      "type": "topic",
-      "title": "サブトピック2：低レベルな操作が理解できることで応用力が増す"
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal1",
+        "text": "そう！実は宇宙は「三次元多様体」という\n数学の形として考えられているんだ。"
+      }
     },
     {
       "id": 10,
       "type": "dialogue",
       "script": {
-        "speaker": "アオイ",
-        "text": "他にはどんな学習上の意義があるの？"
+        "speaker": "1",
+        "face": "normal2",
+        "text": "三次元多様体？難しそうだけど、わかりや\nすく言うと？"
       }
     },
     {
       "id": 11,
       "type": "dialogue",
       "script": {
-        "speaker": "カイ",
-        "text": "C言語はハードウェアに近い部分を直接操作できるから、例えばビット演算やメモリ管理を自分で制御する経験ができるんだ。これにより、プログラミング全体の応用力が上がると言われているよ。"
+        "speaker": "2",
+        "face": "normal3",
+        "text": "簡単に言うと、私たちが住む空間がどん\nな「形」をしているかを数学で調べることなんだ。"
       }
     },
     {
       "id": 12,
       "type": "dialogue",
       "script": {
-        "speaker": "アオイ",
-        "text": "ビット演算って何？"
+        "speaker": "1",
+        "face": "surprised",
+        "text": "宇宙の「果て」ってあるの？"
       }
     },
     {
       "id": 13,
       "type": "dialogue",
       "script": {
-        "speaker": "カイ",
-        "text": "ビット演算は数字を二進数の単位で操作する方法で、例えば高速な処理や省メモリのプログラムを書くときに使うテクニックだよ。Pythonでもできるけど、C言語で学ぶと計算の仕組みがより分かりやすいんだ。"
+        "speaker": "2",
+        "face": "normal4",
+        "text": "それも形に関係しているよ。たとえば、地球\nの表面は端がないよね。"
       }
     },
     {
       "id": 14,
       "type": "dialogue",
       "script": {
-        "speaker": "アオイ",
-        "text": "そうか、低レベルの操作ができることで、プログラムの仕組みが深く理解できるんだね。"
+        "speaker": "1",
+        "face": "normal1",
+        "text": "そうだね。地球の表面はぐるっと回れるから\n果てがない。"
       }
     },
     {
       "id": 15,
       "type": "dialogue",
       "script": {
-        "speaker": "カイ",
-        "text": "その通り。実際、組み込み系のエンジニアやゲームプログラマーの多くはC言語から始めて、基礎を固めているんだ。"
+        "speaker": "2",
+        "face": "normal2",
+        "text": "宇宙も同じように果てがないかもしれない。\n数学では「閉じている」形と考えるんだ。"
       }
     },
     {
       "id": 16,
-      "type": "topic",
-      "title": "まとめ"
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "worry",
+        "text": "閉じているって、どういうこと？"
+      }
     },
     {
       "id": 17,
       "type": "dialogue",
       "script": {
-        "speaker": "カイ",
-        "text": "まとめると、C言語から学ぶことでコンピュータのメモリ管理やCPUの動きがリアルに理解できて、低レベルの操作が身につく。これが後々どんな高級言語を使っても応用できる力になるんだ。"
+        "speaker": "2",
+        "face": "normal3",
+        "text": "たとえば球の表面のように、端がなくてずっ\nと続く形だよ。"
       }
     },
     {
       "id": 18,
       "type": "dialogue",
       "script": {
-        "speaker": "アオイ",
-        "text": "なるほど。だから初心者にはちょっと難しいけど、C言語から始めることでプログラミングの土台がしっかり作れるってことなんだね。私も基礎をしっかり学びたいから、C言語にチャレンジしてみようかな。"
+        "speaker": "1",
+        "face": "surprised",
+        "text": "ポアンカレ予想って何？宇宙と関係あるの？"
+      }
+    },
+    {
+      "id": 19,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "ポアンカレ予想は「三次元多様体」の性質を\n調べる問題だよ。"
+      }
+    },
+    {
+      "id": 20,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "もう少し詳しく教えてほしいな。"
+      }
+    },
+    {
+      "id": 21,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "この予想は「ある条件の三次元空間は球の形\nと同じ」というものなんだ。"
+      }
+    },
+    {
+      "id": 22,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "surprised",
+        "text": "つまり、宇宙がその条件を満たせば、宇宙は\n球のような形ということ？"
+      }
+    },
+    {
+      "id": 23,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal3",
+        "text": "そうだね。それが証明されたことで、宇宙の\n形の理解が進んだんだ。"
+      }
+    },
+    {
+      "id": 24,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "worry",
+        "text": "ポアンカレ予想はいつ証明されたの？"
+      }
+    },
+    {
+      "id": 25,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "2003年に数学者のグリゴリー・ペレルマンさん\nが証明したよ。"
+      }
+    },
+    {
+      "id": 26,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "surprised",
+        "text": "最近なんだね！その証明はどうやってわかったの？"
+      }
+    },
+    {
+      "id": 27,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal1",
+        "text": "彼は「リッチフロー」という数学の技術を使\nったんだ。形のゆがみを分析する方法だよ。"
+      }
+    },
+    {
+      "id": 28,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal2",
+        "text": "形のゆがみを調べて、宇宙の形がわかるなんて\n面白いね。"
+      }
+    },
+    {
+      "id": 29,
+      "type": "topic",
+      "title": "まとめ"
+    },
+    {
+      "id": 30,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal3",
+        "text": "まとめると、宇宙の形は数学の「三次元多様体」\nで表されるよ。"
+      }
+    },
+    {
+      "id": 31,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "そしてポアンカレ予想の証明で、宇宙が球のよ\nうな形かもしれないとわかったんだ。"
+      }
+    },
+    {
+      "id": 32,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "数学のおかげで宇宙の果てや形が少し見えてき\nたんだね。面白かった！"
+      }
+    },
+    {
+      "id": 33,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "うん、これからも宇宙の秘密を数学で紐解いて\nいこうね。"
       }
     }
   ]

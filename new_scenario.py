@@ -290,10 +290,10 @@ class ScenarioService:
 
         # --- 各トピックを処理 -----------------------------------------
         for idx, t in enumerate(topic_list,1):
-            print(f"🎬 2-{idx: 03d}) 台本生成中: {t['title']}")
+            print(f"🎬 2-{idx: 04d}) 台本生成中: {t['title']}")
             script = self._script_gen.generate(t["title"], t["points"])
 
-            print(f"📑 3-{idx: 03d}) 構造化中: {t['title']}")
+            print(f"📑 3-{idx: 04d}) 構造化中: {t['title']}")
             segs = self._structurer.to_segments(script)
 
             # id を全体でユニークになるよう振り直す
@@ -316,3 +316,6 @@ if __name__ == "__main__":
     svc = ScenarioService()
     result = svc.run(theme, minutes)
     rprint(result)  # segments 一覧がカラー表示されます
+
+    with open('b.txt', 'w', encoding='utf-8') as f:
+        json.dump(result, f, ensure_ascii=False, indent=2)

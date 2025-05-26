@@ -163,7 +163,7 @@ class VoiceVoxTTS:
         query = self.session.post(
             f"{self.host}/audio_query",
             params={"text": text, "speaker": speaker_id},
-            timeout=10,
+            timeout=30,
         ).json()
 
         # パラメータ上書き
@@ -256,6 +256,6 @@ if __name__ == "__main__":
         out_dir="./voice",
         char_style=char_style,
         tts_params=tts_params,
-        processes=None, #<-Noneだとcpuコア数になる
+        processes=2, #<-Noneだとcpuコア数になる
     )
     wav_files = pipeline.run(scenario)

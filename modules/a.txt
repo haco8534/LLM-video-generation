@@ -6,7 +6,7 @@
       "script": {
         "speaker": "2",
         "face": "surprised",
-        "text": "QRコードって、四角いドッ\nトがいっぱい並んでるだけなのに、なんであんなに情報が読めるのだ？"
+        "text": "逆平方根って何なのだ？ボクには\n難しいのだ。"
       }
     },
     {
@@ -15,7 +15,7 @@
       "script": {
         "speaker": "1",
         "face": "normal1",
-        "text": "それはね、QRコードのデザイン\nが都市のビル群の配置からヒントを得ているからですの。ビルの街並みが迷路のように見えるでしょう？"
+        "text": "逆平方根とは「1を√xで割る」こと\nですわよ。例えば速さの計算で使いますわ。"
       }
     },
     {
@@ -24,7 +24,7 @@
       "script": {
         "speaker": "2",
         "face": "normal2",
-        "text": "へ〜、街の形がコードになってるのか！でも、どうやって情報を隠してるのだ？"
+        "text": "なるほど、1をルートで割るのか。でも\nなんでゲームで必要なのだ？"
       }
     },
     {
@@ -33,7 +33,7 @@
       "script": {
         "speaker": "1",
         "face": "normal3",
-        "text": "ビルの配置のように、四角いドット\nが特定の位置に並ぶことでパターンを作り、読み取り機がその配置を解析して情報を読み取るのですわ。要するに、街の地図が秘密のメッセージになるってことね。"
+        "text": "3Dの光や向きの計算でベクトルの長さを\nすぐ求めたい時に便利ですの。"
       }
     },
     {
@@ -42,70 +42,70 @@
       "script": {
         "speaker": "2",
         "face": "surprised",
-        "text": "なるほどなのだ！ただの模様じゃなくて、都市の構造が応用されてるとは面白いのだ！"
+        "text": "たった数行で速く計算できるって本当\nなのだ？"
       }
     },
     {
       "id": 6,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "surprised",
-        "text": "QRコードっていつできたのだ？"
+        "speaker": "1",
+        "face": "normal4",
+        "text": "はい、秘密はビット演算と近似値を使う\nから高速なのですわ。"
       }
     },
     {
       "id": 7,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
-        "face": "normal1",
-        "text": "1994年に日本のデンソーで誕生したのですわ。\n高速で読み取れるコード体系ですのよ。"
+        "speaker": "2",
+        "face": "surprised",
+        "text": "ビット演算がどう役立つのだ？そんなこと\nあるのだ？"
       }
     },
     {
       "id": 8,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "normal2",
-        "text": "へ〜！速く読めるってどういうことなのだ？"
+        "speaker": "1",
+        "face": "normal1",
+        "text": "数値の中身を直接操作して初期値を素早く\n推測するのですわ。"
       }
     },
     {
       "id": 9,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
-        "face": "normal3",
-        "text": "要するに、従来のバーコードより多くの情報を短時間で読み取れる仕組みですの。\nまるで街のビル群のように整然と情報が並んでいる感じですわ。"
+        "speaker": "2",
+        "face": "normal2",
+        "text": "へえ、そうして近似から正確に直すのだね？"
       }
     },
     {
       "id": 10,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "surprised",
-        "text": "ビルの街並みがヒントになったの？面白いのだ！"
+        "speaker": "1",
+        "face": "normal3",
+        "text": "そうですわ、ニュートン法を使いながら精度を\n高めますのよ。"
       }
     },
     {
       "id": 11,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
-        "face": "normal4",
-        "text": "はい、開発者の原哲夫氏は都市のビル配置から模様の構造を考えましたの。\n窓の配置のように区分けして効率的に情報を読み取れるのですわ。"
+        "speaker": "2",
+        "face": "surprised",
+        "text": "高速逆平方根アルゴリズムは\nQuake IIIで話題になったのだ？"
       }
     },
     {
       "id": 12,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "surprised",
-        "text": "なるほど、ビルの窓の並びが情報の整理に役立つとは斬新なのだ！"
+        "speaker": "1",
+        "face": "normal1",
+        "text": "そうですわ。3Dゲームで速さが\n命だった時代ですのよ。"
       }
     },
     {
@@ -113,8 +113,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "surprised",
-        "text": "QRコードの四角いブロックっ\nて、なんだかビルの窓みたいだよねのだ！"
+        "face": "normal2",
+        "text": "従来の逆平方根計算って\n何が問題だったのだ？"
       }
     },
     {
@@ -122,8 +122,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "normal1",
-        "text": "そうですわ。あの格子模様は、まるで街の建物の壁や窓のように\n情報を区切っているのですの。要するに、情報の整理整頓が目的ですわね。"
+        "face": "normal3",
+        "text": "計算が重く、リアルタイム処理に\n遅延が出やすかったのですわ。"
       }
     },
     {
@@ -131,8 +131,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal2",
-        "text": "へ〜！それであの大きな角のマークは何なのだ？"
+        "face": "normal4",
+        "text": "どうやってその問題を解決したのだ？"
       }
     },
     {
@@ -140,8 +140,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "normal3",
-        "text": "あれは位置検出パターンといいまして、街のランドマークの役割を果たしていますの。読み取り機がここを目印にして全体の場所を把握するのですわ。"
+        "face": "normal1",
+        "text": "初歩的な近似値とビット演算で\n高速化を図ったのですわね。"
       }
     },
     {
@@ -149,8 +149,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal4",
-        "text": "なるほどなのだ！都市計画みたいなデザインなんだね。"
+        "face": "normal2",
+        "text": "当時のハードはどんな環境だったのだ？"
       }
     },
     {
@@ -158,8 +158,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "normal1",
-        "text": "おっしゃる通りですわ。複雑な情報の街並みを効率良く伝えるための、綿密な設計思想が隠されているのですの。"
+        "face": "normal3",
+        "text": "浮動小数点演算が遅く、工夫が\n求められたから生まれたのですわ。"
       }
     },
     {
@@ -167,8 +167,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "surprised",
-        "text": "QRコードって、ただの四角い\n模様じゃないのだ？"
+        "face": "normal4",
+        "text": "つまり制約がアイデアの母だったのだ？"
       }
     },
     {
@@ -177,7 +177,7 @@
       "script": {
         "speaker": "1",
         "face": "normal1",
-        "text": "そうですわ。最新技術では、ARや\nIoTと連携して都市生活を便利にしているのですの。"
+        "text": "まさにその通り。制限が革新的手法を\n促したのですわよ。"
       }
     },
     {
@@ -185,8 +185,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal2",
-        "text": "へ〜！例えばどんな風に使われて\nいるのだ？"
+        "face": "surprised",
+        "text": "ビット操作で魔法の数って\n何なのだ？"
       }
     },
     {
@@ -194,8 +194,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "normal3",
-        "text": "スマートシティでは、街の案内板や\nインフラ情報にQRコードが設置され、スマホで簡単に情報が得られるのですわ。"
+        "face": "normal1",
+        "text": "それは浮動小数点の裏技ですわよ。"
       }
     },
     {
@@ -203,8 +203,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "surprised",
-        "text": "なるほどなのだ！未来はどうなるのだ？"
+        "face": "normal2",
+        "text": "浮動小数点の裏技って\nどういうことなのだ？"
       }
     },
     {
@@ -212,8 +212,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "normal4",
-        "text": "将来的にはビルの外壁自体が巨大な\nQRコードになり、街全体が情報のネットワークになる可能性がありますの。"
+        "face": "normal3",
+        "text": "数値のビットを直接操作し、\n近似計算を高速化するのですわ。"
       }
     },
     {
@@ -221,62 +221,260 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "surprised",
-        "text": "わあ、街がまるで一つの大きなスマホ\n画面みたいになるのだ！"
+        "face": "normal4",
+        "text": "魔法の数0x5f3759dfはどんな\n意味があるのだ？"
       }
     },
     {
       "id": 26,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "surprised",
-        "text": "QRコードってただの模様かと\n思ってたのだ！どうしてあんな形になったの？"
+        "speaker": "1",
+        "face": "normal1",
+        "text": "これは逆平方根近似の秘密の鍵の\nような数ですわね。"
       }
     },
     {
       "id": 27,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
-        "face": "normal1",
-        "text": "それは都市のビル群の配置から\nヒントを得たからですの。四角い建物が並ぶ街並みの中で、読み取りやすさを追求した結果、合理的かつ美しいパターンが生まれたのですわ。"
+        "speaker": "2",
+        "face": "normal2",
+        "text": "どうしてそんな特別な数に\nなるのだ？"
       }
     },
     {
       "id": 28,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "normal2",
-        "text": "へ〜、街の景色がコードのデザインに\n影響してるなんて不思議なのだ！"
+        "speaker": "1",
+        "face": "normal3",
+        "text": "浮動小数点の指数部の調整と誤差の均衡を\n巧みに取っているのですわ。"
       }
     },
     {
       "id": 29,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
-        "face": "normal3",
-        "text": "そうですの。要するに、日常の風景が私たちの情報の伝え方まで変えているってことですわ。だから、単なる模様以上の意味を持っているのですのよ。"
+        "speaker": "2",
+        "face": "normal4",
+        "text": "近似の精度はどうやって\n高めるのだ？"
       }
     },
     {
       "id": 30,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "surprised",
-        "text": "なるほどなのだ！これからQRコードがもっと進化したら、どんな街になるのか楽しみなのだ。"
+        "speaker": "1",
+        "face": "normal1",
+        "text": "ニュートン法を使い、一回の計算で\nグンと良くなるのですわ。"
       }
     },
     {
       "id": 31,
       "type": "dialogue",
       "script": {
+        "speaker": "2",
+        "face": "worry",
+        "text": "ニュートン法って難しそうだけど\n簡単なのだ？"
+      }
+    },
+    {
+      "id": 32,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal2",
+        "text": "例えるなら曲線に接線を引いて\n答えに近づく反復法ですわよ。"
+      }
+    },
+    {
+      "id": 33,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "高速逆平方根って、ゲーム以外でも\n使われてるのだ？"
+      }
+    },
+    {
+      "id": 34,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "ええ、物理シミュレーションや機械学習でも\n重要ですわよ。例えば、ベクトルの正規化に使われますの。"
+      }
+    },
+    {
+      "id": 35,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "なるほど！速く計算できるから\nシミュレーションがスムーズになるのだね？"
+      }
+    },
+    {
+      "id": 36,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal2",
+        "text": "その通りですわ。GPUの専用命令で\nさらに高速化されていますのよ。"
+      }
+    },
+    {
+      "id": 37,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "専用命令があるなんて驚きなのだ！\n他にはどんな最適化があるのだ？"
+      }
+    },
+    {
+      "id": 38,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "誤差を許容して近似を使い、処理速度を\n優先するトレンドがありますわね。"
+      }
+    },
+    {
+      "id": 39,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "worry",
+        "text": "でも、誤差が大きすぎると困るのだ？"
+      }
+    },
+    {
+      "id": 40,
+      "type": "dialogue",
+      "script": {
         "speaker": "1",
         "face": "normal4",
-        "text": "ええ、街とQRコードは共に進化し続ける存在ですわ。新しい発見を期待しながら見守るのも面白いですのよ。"
+        "text": "そうですわ。限界があり、正確さが求められる\n場面では代替手法が検討されておりますの。"
+      }
+    },
+    {
+      "id": 41,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "代替手法って具体的には何かあるのだ？"
+      }
+    },
+    {
+      "id": 42,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "例えば、Newton法の改良版や機械学習で\n近似する方法などですわ。"
+      }
+    },
+    {
+      "id": 43,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "そんなことあるのだ？機械学習が計算にも\n使われるなんて面白いのだ！"
+      }
+    },
+    {
+      "id": 44,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "高速逆平方根アルゴリズムって、\nたった数行で何ができるのだ？"
+      }
+    },
+    {
+      "id": 45,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "驚くべきは、短いコードで逆平方根を\n超高速に計算できることですわよ。"
+      }
+    },
+    {
+      "id": 46,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "逆平方根って、例えば何に使うのだ？"
+      }
+    },
+    {
+      "id": 47,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "3Dゲームの光の反射や物理計算で、\n速度が求められる場面によく使われるのですわ。"
+      }
+    },
+    {
+      "id": 48,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "なるほど、昔から使われてるのかしら？"
+      }
+    },
+    {
+      "id": 49,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "はい、この技術は1999年に登場し、\n数値計算の革新をもたらしましたわ。"
+      }
+    },
+    {
+      "id": 50,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "そんなに歴史があるとは知らなかったのだ。\n今も使われてるの？"
+      }
+    },
+    {
+      "id": 51,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal2",
+        "text": "現代の多くの高速計算にも影響を与え、\n数学と技術の融合の象徴ですわね。"
+      }
+    },
+    {
+      "id": 52,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal3",
+        "text": "未来でも、こういう技術は進化し続けるのだ？"
+      }
+    },
+    {
+      "id": 53,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal4",
+        "text": "ええ、数学とテクノロジーが結びつく限り、\nこのアルゴリズムは輝き続けるでしょうよ。"
       }
     }
   ]

@@ -70,7 +70,7 @@ def draw_subtitle_box(base):
 
 # === 字幕テキスト描画 ===
 def draw_subtitle_text(base, text, speaker):
-    if speaker == "1":
+    if speaker == "1":        
         return base.drawtext(
         text=text,
         fontfile=FONT_PATH,
@@ -150,7 +150,8 @@ if __name__ == "__main__":
         text = scenario_segment["text"]
         speaker = scenario_segment["type"]
 
-        current_face[speaker] = scenario_segment["face"]
+        if i is not 1:
+            current_face[speaker] = scenario_segment["face"]
 
         voice_path = f"./assets/voice/{i:03}.wav"
         segment_path = create_video_segment(voice_path, text, speaker,current_face, i)

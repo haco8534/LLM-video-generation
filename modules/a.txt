@@ -1,18 +1,21 @@
 {
-
-    },segments": [
+  "segments": [
     {
       "id": 1,
-      "type": "topic",
-      "title": "導",
-    }
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "QRコードって、四角いドッ\nトがいっぱい並んでるだけなのに、なんであんなに情報が読めるのだ？"
+      }
+    },
     {
       "id": 2,
       "type": "dialogue",
       "script": {
         "speaker": "1",
         "face": "normal1",
-        "text": "ねえカイ、宇宙ってどんな形を\nしているの？"
+        "text": "それはね、QRコードのデザイン\nが都市のビル群の配置からヒントを得ているからですの。ビルの街並みが迷路のように見えるでしょう？"
       }
     },
     {
@@ -20,8 +23,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal1",
-        "text": "いい質問だね、アオイ。宇宙の形は\n数学で考えられているんだよ。"
+        "face": "normal2",
+        "text": "へ〜、街の形がコードになってるのか！でも、どうやって情報を隠してるのだ？"
       }
     },
     {
@@ -29,76 +32,80 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "normal2",
-        "text": "数学で宇宙の形がわかるなんて、不\n思議！教えてほしいな。"
+        "face": "normal3",
+        "text": "ビルの配置のように、四角いドット\nが特定の位置に並ぶことでパターンを作り、読み取り機がその配置を解析して情報を読み取るのですわ。要するに、街の地図が秘密のメッセージになるってことね。"
       }
     },
     {
       "id": 5,
-      "type": "topic",
-      "title": "本編"
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "なるほどなのだ！ただの模様じゃなくて、都市の構造が応用されてるとは面白いのだ！"
+      }
     },
     {
       "id": 6,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
-        "face": "normal3",
-        "text": "まず、宇宙の形って具体的にどうい\nうこと？"
+        "speaker": "2",
+        "face": "surprised",
+        "text": "QRコードっていつできたのだ？"
       }
     },
     {
       "id": 7,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "normal4",
-        "text": "宇宙の形は「空間の曲がり方」を意味\nするよ。例えば、平らな平面や球の表面みたいにね。"
+        "speaker": "1",
+        "face": "normal1",
+        "text": "1994年に日本のデンソーで誕生したのですわ。\n高速で読み取れるコード体系ですのよ。"
       }
     },
     {
       "id": 8,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
-        "face": "surprised",
-        "text": "なるほど。宇宙が平らとか丸いとか、そ\nんな感じ？"
+        "speaker": "2",
+        "face": "normal2",
+        "text": "へ〜！速く読めるってどういうことなのだ？"
       }
     },
     {
       "id": 9,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "normal1",
-        "text": "そう！実は宇宙は「三次元多様体」という\n数学の形として考えられているんだ。"
+        "speaker": "1",
+        "face": "normal3",
+        "text": "要するに、従来のバーコードより多くの情報を短時間で読み取れる仕組みですの。\nまるで街のビル群のように整然と情報が並んでいる感じですわ。"
       }
     },
     {
       "id": 10,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
-        "face": "normal2",
-        "text": "三次元多様体？難しそうだけど、わかりや\nすく言うと？"
+        "speaker": "2",
+        "face": "surprised",
+        "text": "ビルの街並みがヒントになったの？面白いのだ！"
       }
     },
     {
       "id": 11,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "normal3",
-        "text": "簡単に言うと、私たちが住む空間がどん\nな「形」をしているかを数学で調べることなんだ。"
+        "speaker": "1",
+        "face": "normal4",
+        "text": "はい、開発者の原哲夫氏は都市のビル配置から模様の構造を考えましたの。\n窓の配置のように区分けして効率的に情報を読み取れるのですわ。"
       }
     },
     {
       "id": 12,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
+        "speaker": "2",
         "face": "surprised",
-        "text": "宇宙の「果て」ってあるの？"
+        "text": "なるほど、ビルの窓の並びが情報の整理に役立つとは斬新なのだ！"
       }
     },
     {
@@ -106,8 +113,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal4",
-        "text": "それも形に関係しているよ。たとえば、地球\nの表面は端がないよね。"
+        "face": "surprised",
+        "text": "QRコードの四角いブロックっ\nて、なんだかビルの窓みたいだよねのだ！"
       }
     },
     {
@@ -116,7 +123,7 @@
       "script": {
         "speaker": "1",
         "face": "normal1",
-        "text": "そうだね。地球の表面はぐるっと回れるから\n果てがない。"
+        "text": "そうですわ。あの格子模様は、まるで街の建物の壁や窓のように\n情報を区切っているのですの。要するに、情報の整理整頓が目的ですわね。"
       }
     },
     {
@@ -125,7 +132,7 @@
       "script": {
         "speaker": "2",
         "face": "normal2",
-        "text": "宇宙も同じように果てがないかもしれない。\n数学では「閉じている」形と考えるんだ。"
+        "text": "へ〜！それであの大きな角のマークは何なのだ？"
       }
     },
     {
@@ -133,8 +140,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "worry",
-        "text": "閉じているって、どういうこと？"
+        "face": "normal3",
+        "text": "あれは位置検出パターンといいまして、街のランドマークの役割を果たしていますの。読み取り機がここを目印にして全体の場所を把握するのですわ。"
       }
     },
     {
@@ -142,8 +149,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal3",
-        "text": "たとえば球の表面のように、端がなくてずっ\nと続く形だよ。"
+        "face": "normal4",
+        "text": "なるほどなのだ！都市計画みたいなデザインなんだね。"
       }
     },
     {
@@ -151,8 +158,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "surprised",
-        "text": "ポアンカレ予想って何？宇宙と関係あるの？"
+        "face": "normal1",
+        "text": "おっしゃる通りですわ。複雑な情報の街並みを効率良く伝えるための、綿密な設計思想が隠されているのですの。"
       }
     },
     {
@@ -160,8 +167,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal4",
-        "text": "ポアンカレ予想は「三次元多様体」の性質を\n調べる問題だよ。"
+        "face": "surprised",
+        "text": "QRコードって、ただの四角い\n模様じゃないのだ？"
       }
     },
     {
@@ -170,7 +177,7 @@
       "script": {
         "speaker": "1",
         "face": "normal1",
-        "text": "もう少し詳しく教えてほしいな。"
+        "text": "そうですわ。最新技術では、ARや\nIoTと連携して都市生活を便利にしているのですの。"
       }
     },
     {
@@ -179,7 +186,7 @@
       "script": {
         "speaker": "2",
         "face": "normal2",
-        "text": "この予想は「ある条件の三次元空間は球の形\nと同じ」というものなんだ。"
+        "text": "へ〜！例えばどんな風に使われて\nいるのだ？"
       }
     },
     {
@@ -187,8 +194,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "surprised",
-        "text": "つまり、宇宙がその条件を満たせば、宇宙は\n球のような形ということ？"
+        "face": "normal3",
+        "text": "スマートシティでは、街の案内板や\nインフラ情報にQRコードが設置され、スマホで簡単に情報が得られるのですわ。"
       }
     },
     {
@@ -196,8 +203,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal3",
-        "text": "そうだね。それが証明されたことで、宇宙の\n形の理解が進んだんだ。"
+        "face": "surprised",
+        "text": "なるほどなのだ！未来はどうなるのだ？"
       }
     },
     {
@@ -205,8 +212,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "worry",
-        "text": "ポアンカレ予想はいつ証明されたの？"
+        "face": "normal4",
+        "text": "将来的にはビルの外壁自体が巨大な\nQRコードになり、街全体が情報のネットワークになる可能性がありますの。"
       }
     },
     {
@@ -214,76 +221,62 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal4",
-        "text": "2003年に数学者のグリゴリー・ペレルマンさん\nが証明したよ。"
+        "face": "surprised",
+        "text": "わあ、街がまるで一つの大きなスマホ\n画面みたいになるのだ！"
       }
     },
     {
       "id": 26,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
+        "speaker": "2",
         "face": "surprised",
-        "text": "最近なんだね！その証明はどうやってわかったの？"
+        "text": "QRコードってただの模様かと\n思ってたのだ！どうしてあんな形になったの？"
       }
     },
     {
       "id": 27,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
+        "speaker": "1",
         "face": "normal1",
-        "text": "彼は「リッチフロー」という数学の技術を使\nったんだ。形のゆがみを分析する方法だよ。"
+        "text": "それは都市のビル群の配置から\nヒントを得たからですの。四角い建物が並ぶ街並みの中で、読み取りやすさを追求した結果、合理的かつ美しいパターンが生まれたのですわ。"
       }
     },
     {
       "id": 28,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
+        "speaker": "2",
         "face": "normal2",
-        "text": "形のゆがみを調べて、宇宙の形がわかるなんて\n面白いね。"
+        "text": "へ〜、街の景色がコードのデザインに\n影響してるなんて不思議なのだ！"
       }
     },
     {
       "id": 29,
-      "type": "topic",
-      "title": "まとめ"
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "そうですの。要するに、日常の風景が私たちの情報の伝え方まで変えているってことですわ。だから、単なる模様以上の意味を持っているのですのよ。"
+      }
     },
     {
       "id": 30,
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal3",
-        "text": "まとめると、宇宙の形は数学の「三次元多様体」\nで表されるよ。"
+        "face": "surprised",
+        "text": "なるほどなのだ！これからQRコードがもっと進化したら、どんな街になるのか楽しみなのだ。"
       }
     },
     {
       "id": 31,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "normal4",
-        "text": "そしてポアンカレ予想の証明で、宇宙が球のよ\nうな形かもしれないとわかったんだ。"
-      }
-    },
-    {
-      "id": 32,
-      "type": "dialogue",
-      "script": {
         "speaker": "1",
-        "face": "normal1",
-        "text": "数学のおかげで宇宙の果てや形が少し見えてき\nたんだね。面白かった！"
-      }
-    },
-    {
-      "id": 33,
-      "type": "dialogue",
-      "script": {
-        "speaker": "2",
-        "face": "normal2",
-        "text": "うん、これからも宇宙の秘密を数学で紐解いて\nいこうね。"
+        "face": "normal4",
+        "text": "ええ、街とQRコードは共に進化し続ける存在ですわ。新しい発見を期待しながら見守るのも面白いですのよ。"
       }
     }
   ]

@@ -113,17 +113,6 @@ class ReadGenerator:
 
 
 class VoiceVoxTTS:
-    """
-    char_style 形式:
-        {
-            "アオイ": "四国めたん/ノーマル",
-            "カイ":   "ずんだもん/ノーマル"
-        }
-    params:
-        {"speedScale": 1.2, "pitchScale": 0.0, ...}
-        -> audio_query JSON に上書き
-    """
-
     def __init__(
         self,
         host: str = "http://localhost:50021",
@@ -202,7 +191,7 @@ class TTSPipeline:
 
     def __init__(
         self,
-        out_dir: str = "./voice",
+        out_dir: str = "./assets/voice",
         char_style: Dict[str, str] | None = None,
         tts_params: Dict[str, float] | None = None,
         processes: int | None = None,
@@ -253,9 +242,9 @@ if __name__ == "__main__":
 
     # ④ パイプライン実行
     pipeline = TTSPipeline(
-        out_dir="./voice",
+        out_dir="./assets/voice",
         char_style=char_style,
         tts_params=tts_params,
-        processes=2, #<-Noneだとcpuコア数になる
+        processes=3, #<-Noneだとcpuコア数になる
     )
     wav_files = pipeline.run(scenario)

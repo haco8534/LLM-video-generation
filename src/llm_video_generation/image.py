@@ -5,8 +5,6 @@ image_set.py
 Pixabay に適した画像を取得するためのユーティリティ群
 """
 
-from __future__ import annotations
-
 import json
 import os
 from typing import List, Sequence

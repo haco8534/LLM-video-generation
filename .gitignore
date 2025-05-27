@@ -1,6 +1,1 @@
 venv/
-assets/voice
-voice
-./output.mp4
-temp/*
-!temp/.gitkeep

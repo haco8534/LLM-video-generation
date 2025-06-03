@@ -228,7 +228,7 @@ class ScenarioGenerator:
 class ScenarioStructurer:
     """台本文字列 → JSON 構造化（segments）"""
 
-    def __init__(self, client: OpenAI, *, model: str = "gpt-4o"):
+    def __init__(self, client: OpenAI, *, model: str = "gpt-4.1"):
         self._client = client
         self._model = model
 
@@ -317,7 +317,7 @@ if __name__ == "__main__":
 
     svc = ScenarioService()
     result = svc.run(theme, minutes)
-    print(result)  # segments 一覧がカラー表示されます
+    print(result)
 
-    with open('./modules/a.txt', 'w', encoding='utf-8') as f:
+    with open('./llm_video_generation/src/a.txt', 'w', encoding='utf-8') as f:
         json.dump(result, f, ensure_ascii=False, indent=2)

@@ -1,16 +1,24 @@
 """
-video_assembler.py
+video.py  –  in-memory friendly edition
 ────────────────────────────────────────────────────────
-・構造化台本(segments) と合成済み音声ファイルを入力
+・構造化台本(dict) と **音声(bytes)リスト** を入力
 ・キャラクター画像／字幕付き 720p MP4 をセグメントごとに生成
-・最後にすべて連結して 1 本の動画に出力
+・最後に連結して 1 本の動画に出力
+
+外部依存:
+    pip install ffmpeg-python rich
 """
 
+from __future__ import annotations
+
+import io
 import json
+import tempfile
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Sequence
 
 import ffmpeg
+from rich import print
 
 # ──────────────────────────────
 # グローバル設定
@@ -20,7 +28,6 @@ FPS = 30
 SEG_DUR = 1          # 秒
 FONT = "C:/Windows/Fonts/meiryo.ttc"
 
-
 # ──────────────────────────────
 # 低レイヤ helper
 # ──────────────────────────────
@@ -29,7 +36,6 @@ def _mk_background():
 
 
 def _overlay_characters(base, faces: Dict[str, str]):
-    # faces = {"1":"normal1", "2":"normal2"}
     zunda = (
         ffmpeg.input(f"assets/character/ずんだもん/{faces['2']}.png")
         .filter("scale", 400, -1)
@@ -74,51 +80,67 @@ def _subtitle_text(base, text: str, speaker: str):
     )
 
 
-def _segment_ffmpeg_graph(voice_path: Path, text: str, speaker: str, faces: Dict[str, str]):
+def _segment_ffmpeg_graph(
+    wav_path: Path, text: str, speaker: str, faces: Dict[str, str]
+):
     bg = _mk_background()
     bg = _overlay_characters(bg, faces)
     bg = _subtitle_box(bg)
     bg = _subtitle_text(bg, text, speaker)
-    audio = ffmpeg.input(str(voice_path))
+    audio = ffmpeg.input(str(wav_path))
     return bg, audio
-
 
 # ──────────────────────────────
 # メインクラス
 # ──────────────────────────────
 class VideoAssembler:
     """
-    1. `build_segments()` で temp/*.mp4 を作成
-    2. `concat()`       で連結
+    音声ファイルを書き出さなくても、bytes → wav の一時化で処理できる。
+
+    Typical flow
+    ------------
+        scenario = ScenarioService(...).run(...)
+        audio_bytes = TTSPipeline(...).run(scenario)
+        assembler = VideoAssembler()
+        assembler.build_full_video(scenario, audio_bytes, "output.mp4")
     """
 
-    def __init__(
-        self,
-        temp_dir: str | Path = "./temp",
-        assets_voice: str | Path = "./assets/voice",
-    ):
-        self.temp_dir = Path(temp_dir)
+    def __init__(self, temp_dir: str | Path | None = None):
+        self.temp_dir = Path(temp_dir) if temp_dir else Path(tempfile.mkdtemp())
         self.temp_dir.mkdir(parents=True, exist_ok=True)
-        self.assets_voice = Path(assets_voice)
 
     # --------------------------------------------------------
-
-    def build_segments(self, scenario: dict) -> List[Path]:
-        """セグメント mp4 を生成してファイルパスを返す"""
+    def build_segments(
+        self, scenario: Dict, audio_bytes: Sequence[bytes] | None = None
+    ) -> List[Path]:
+        """
+        audio_bytes が与えられた場合：
+            index 0 → 001.wav, 1 → 002.wav … として temp_dir に保存して利用
+        audio_bytes が None の場合：
+            ./assets/voice/001.wav … のような既存 WAV を参照（後方互換）
+        """
         segments = _extract_dialogue_segments(scenario)
-        current_face = {"1": "normal1", "2": "normal1"}
+        if audio_bytes is not None and len(audio_bytes) != len(segments):
+            raise ValueError("audio_bytes の個数が dialogue セグメント数と一致しません")
 
+        current_face = {"1": "normal1", "2": "normal1"}
         paths: List[Path] = []
+
         for idx, seg in enumerate(segments, 1):
             text, speaker, face = seg["text"], seg["speaker"], seg["face"]
             if idx != 1:
                 current_face[speaker] = face  # 表情更新
 
-            voice = self.assets_voice / f"{idx:03}.wav"
-            out = self.temp_dir / f"segment_{idx:03}.mp4"
+            # --- 音声ファイルを用意 ----------------------------------
+            if audio_bytes is not None:
+                wav_path = self.temp_dir / f"{idx:03}.wav"
+                wav_path.write_bytes(audio_bytes[idx - 1])
+            else:
+                wav_path = Path(f"./assets/voice/{idx:03}.wav")
 
+            out = self.temp_dir / f"segment_{idx:03}.mp4"
             video_stream, audio_stream = _segment_ffmpeg_graph(
-                voice, text, speaker, current_face
+                wav_path, text, speaker, current_face
             )
 
             (
@@ -139,7 +161,6 @@ class VideoAssembler:
         return paths
 
     # --------------------------------------------------------
-
     def concat(self, segment_files: List[Path], output: str | Path):
         list_file = self.temp_dir / "concat_list.txt"
         with list_file.open("w", encoding="utf-8") as f:
@@ -154,40 +175,29 @@ class VideoAssembler:
         )
 
     # --------------------------------------------------------
-
-    def build_full_video(self, scenario: dict, output_path: str | Path = "output.mp4"):
-        segs = self.build_segments(scenario)
+    def build_full_video(
+        self,
+        scenario: Dict,
+        audio_bytes: Sequence[bytes] | None = None,
+        output_path: str | Path = "output.mp4",
+    ) -> Path:
+        segs = self.build_segments(scenario, audio_bytes)
         self.concat(segs, output_path)
-        return output_path
-
+        return Path(output_path)
 
 # ──────────────────────────────
 # 内部 util
 # ──────────────────────────────
-def _extract_dialogue_segments(scenario: dict):
+def _extract_dialogue_segments(scenario: Dict):
     """
     {text, speaker, face} を順番に返す
     """
-    out = []
-    for seg in scenario["segments"]:
-        if seg["type"] == "dialogue":
-            out.append(
-                {
-                    "text": seg["script"]["text"],
-                    "speaker": seg["script"]["speaker"],
-                    "face": seg["script"]["face"],
-                }
-            )
-    return out
-
-
-# ──────────────────────────────
-# サンプル実行
-# ──────────────────────────────
-if __name__ == "__main__":
-    # 台本例を読み込み
-    scenario = json.loads(Path("./modules/a.txt").read_text(encoding="utf-8"))
-
-    assembler = VideoAssembler(temp_dir="./temp", assets_voice="./assets/voice")
-    final_mp4 = assembler.build_full_video(scenario, output_path="output.mp4")
-    print("✅ 完成:", final_mp4)
+    return [
+        {
+            "text": seg["script"]["text"],
+            "speaker": seg["script"]["speaker"],
+            "face": seg["script"]["face"],
+        }
+        for seg in scenario["segments"]
+        if seg["type"] == "dialogue"
+    ]

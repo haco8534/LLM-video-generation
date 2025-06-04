@@ -115,7 +115,7 @@ _SYSTEM_PROMPT_STRUCT = r"""
         "type":  "dialogue",  // 会話
         "script": {
             "speaker": <"1" or "2">,  // "1"=解説役, "2"=質問役
-            "face":    <"normal"|"surprised"|"irritated"|"rage"|"worry">,
+            "face":    <"normal1"|"normal2"|"normal3"|"normal4"|"surprised"|"annoy"|"rage"|"worry">,
             "text":    <string（約30文字ごとに \n を挿入）>
         }
         }
@@ -131,7 +131,7 @@ _SYSTEM_PROMPT_STRUCT = r"""
     2. 台詞は「解説役」「質問役」から話者を判定し、speaker に "1" または "2" を設定する。
 
     3. 各台詞や疑問符や感嘆符から表情を推測し、face に以下の8つの選択肢から最も適切なものを選ぶ(normal1~4はどそれぞれ違う表情。前回選んだnormal表情と違うものを選ぶ)：  
-    → "normal1", normal2", normal3", normal4", "surprised", "annoy", "rage", "worry"
+    → "normal1", "normal2", "normal3", "normal4", "surprised", "annoy", "rage", "worry"
 
     4. 各セグメントの script.text は約30文字を超える場合は「必ず」改行コード `\\n` を「一度だけ」挿入する（3行にはならない）。挿入は文章の半分あたりで行い、句点、読点や文脈から適切に判断する。
 
@@ -153,7 +153,7 @@ _SYSTEM_PROMPT_STRUCT = r"""
             "text": "Pythonってどうして\n初心者に人気なの？"
         }},
         { "id": 3, "type": "dialogue", "script": {
-            "speaker": "2", "face": "normal",
+            "speaker": "2", "face": "normal1",
             "text": "文法がシンプルで\n読みやすいからだよ。"
         }}
     ]

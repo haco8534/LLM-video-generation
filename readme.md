@@ -1,8 +1,8 @@
 # インストール手順
 
 # 前提アプリケーション
-fffmpeg(動画編集)
-VoiceVox(Text To Speach)
+ffmpeg(動画編集)
+VoiceVox(Text To Speech)
 
 ## 1. 仮想環境作成
 python -m venv venv

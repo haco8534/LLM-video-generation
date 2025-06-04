@@ -194,7 +194,8 @@ class TTSPipeline:
 # --------------------------------------------------------------------------- #
 
 if __name__ == "__main__":
-    scenario_path = Path("./src/llm_video_generation/a.txt")
+    # サンプルシナリオのパスをプロジェクト構成に合わせて修正
+    scenario_path = Path("./llm_video_generation/src/a.txt")
     scenario = json.loads(scenario_path.read_text(encoding="utf-8"))
 
     char_style = {

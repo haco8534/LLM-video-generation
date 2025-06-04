@@ -196,7 +196,8 @@ class ImageSetService:
 
 
 if __name__ == "__main__":
-    scenario = json.load(open("./modules/a.txt", encoding="utf-8"))
+    # サンプルシナリオはモジュール内の a.txt を利用する
+    scenario = json.load(open("./llm_video_generation/src/a.txt", encoding="utf-8"))
     service = ImageSetService()
     urls = service.scenario_to_images(scenario)
 

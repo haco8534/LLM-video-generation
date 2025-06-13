@@ -37,14 +37,14 @@ def _mk_background():
 
 def _overlay_characters(base, faces: Dict[str, str]):
     zunda = (
-        ffmpeg.input(f"assets/character/ずんだもん/{faces['2']}.png")
+        ffmpeg.input(f"llm_video_generation/assets/character/ずんだもん/{faces['2']}.png")
         .filter("scale", 400, -1)
         .filter("hflip")
     )
     base = ffmpeg.overlay(base, zunda, x=-50, y=250)
 
     metan = (
-        ffmpeg.input(f"assets/character/四国めたん/{faces['1']}.png")
+        ffmpeg.input(f"llm_video_generation/assets/character/四国めたん/{faces['1']}.png")
         .filter("scale", 400, -1)
     )
     return ffmpeg.overlay(base, metan, x=950, y=250)

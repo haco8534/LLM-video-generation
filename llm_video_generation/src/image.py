@@ -41,51 +41,38 @@ class KeywordGenerator:
     """OpenAI を用いて英語キーワードを生成"""
 
     _SYSTEM_PROMPT = f'''
-            # 役割
-            あなたは「Pixabay 用キーワード生成 AI」です。
+    # 役割
+    あなたは「Pixabay 用キーワード生成 AI」です。
 
-            # 目的
-            入力される配列の各要素ごとの日本語テキストを読み取り、
-            Pixabay での画像検索に適した **英語キーワード** を、
-            要素順に一次元配列で返してください。
+    # 目的
+    与えられた日本語テキストの配列を読み取り、各要素に対応する **Pixabay の画像検索に適した英語キーワード** を生成してください。
 
-            # 出力形式
-            - 配列は JSON の一次元配列（例: ["first keywords", "second keywords", ...]）とする。
-            - 要素数は入力セグメントと同じだけ。
-            - 各要素はスペース区切り 1〜3 語の英語キーワード。
-            - すべて **小文字**、記号・句読点なし。
+    # 出力形式
+    - JSON形式の一次元配列で出力（例: ["keyword one", "another example", "last one"]）
+    - 入力配列と同じ要素数
+    - 各要素は英単語1〜3語（スペース区切り）、**すべて小文字**
+    - 記号、句読点、固有名詞は含めない
 
-            # キーワード生成ルール
-            1. **Pixabay でヒットしやすい** 抽象的・汎用的な単語を選ぶ  
-            - 例: “computer”, “coding”, “memory”, “education” など  
-            2. 固有名詞・登録商標・人物名・サービス名など  
-            **検索結果が極端に絞られる語は避ける**  
-            - “Python”, “Javascript”, “Pixabay” などは使わない  
-            3. 台本の文脈を要約し、視覚的に表現しやすい概念へ変換する  
-            - 「ビット演算とは？」→ “bitwise operation” ではなく  
-                “binary code” / “digital logic” など  
-            4. 抽象語と具体語を 1〜3 語組み合わせ、  
-            **写真・イラストどちらにも合う** 検索語句にする  
-            5. 同義語が複数ある場合は、より一般的で  
-            画像数が多い語を選択（例: “computer” > “workstation”）  
-            6. 同じセグメント内で複数トピックがあるときは  
-            もっとも主要なイメージを優先  
-            7. 入力に HTML や注釈が混在していても無視する
+    # キーワード生成ルール
+    1. **Pixabayでヒットしやすい**、抽象的・汎用的な語を選ぶ  
+    - 例: "computer", "nature", "education", "cloud" など  
+    2. 固有名詞・登録商標・人物名・サービス名などは避ける  
+    - 例: "Python", "Pixabay", "Google" などは使用不可  
+    3. 文の意味を要約し、**視覚的に連想しやすい概念**に変換する  
+    - 例: 「ビット演算とは？」→ `"binary code"` など  
+    4. 抽象語と具体語を組み合わせ、**写真・イラストの両方にマッチするキーワード**を作る  
+    5. 同義語がある場合は、**Pixabayで一般的な語**を選ぶ  
+    - 例: "computer" > "workstation"  
+    6. セグメント内に複数の話題がある場合、**最も代表的なイメージ**を優先する
 
-            # 手順
-            - あなたに渡されるのは  
-            Python リスト形式の文字列例:  
-            ["テキスト1", "テキスト2", …]  
-            - ルールに従って各テキストから  
-            1〜3 語の英語キーワードを抽出・要約し、  
-            セグメント順に並べて JSON 配列として出力。
+    # 手順
+    - 入力は Python形式の文字列リスト（例: ["テキスト1", "テキスト2", ...]）
+    - これは解説動画の各セグメントであり、全体の文脈を把握したうえでキーワード生成すること。全体の話題に関係のないキーワードは書かない。
+    - 各テキストから1〜3語のキーワードを抽出し、配列として出力する
 
-            # 例 (参考・出力には含めない)
-            入力: ["私はコーヒーが好きです", "空を飛びたい"]  
-            出力: ["coffee cup", "blue sky freedom"]
-
-            # 準備ができたら、入力リストを受け取りしだい  
-            ただちにキーワード配列のみを JSON 形式で返してください。
+    # 出力例（出力には含めない）
+    入力: ["私はコーヒーが好きです", "空を飛びたい"]  
+    出力: ["coffee cup", "blue sky freedom"]
         '''
 
     def __init__(self, client: OpenAI, *, model: str = "gpt-4.1-mini"):
@@ -197,8 +184,10 @@ class ImageSetService:
 
 if __name__ == "__main__":
     # サンプルシナリオはモジュール内の a.txt を利用する
-    scenario = json.load(open("./llm_video_generation/src/a.txt", encoding="utf-8"))
+    scenario = json.load(open("./llm_video_generation/src/s.txt", encoding="utf-8"))
     service = ImageSetService()
     urls = service.scenario_to_images(scenario)
 
-    print(urls)
+    import pickle
+    with open('./llm_video_generation/src/i.pkl', 'wb') as f:
+        pickle.dump(urls, f)

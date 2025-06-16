@@ -1,22 +1,19 @@
 """
-video.py  –  in-memory friendly edition
+video.py
 ────────────────────────────────────────────────────────
-・構造化台本(dict) と **音声(bytes)リスト** を入力
+・構造化台本(dict) と音声(bytes)リストを入力
 ・キャラクター画像／字幕付き 720p MP4 をセグメントごとに生成
 ・最後に連結して 1 本の動画に出力
-
-外部依存:
-    pip install ffmpeg-python rich
 """
 
 from __future__ import annotations
 
-import io
-import json
+import mimetypes
 import tempfile
 from pathlib import Path
 from typing import List, Dict, Sequence
 
+import requests
 import ffmpeg
 from rich import print
 
@@ -32,12 +29,22 @@ FONT = "C:/Windows/Fonts/meiryo.ttc"
 # 低レイヤ helper
 # ──────────────────────────────
 def _mk_background():
-    return ffmpeg.input(f"color=c=white:s={W}x{H}:d={SEG_DUR}:r={FPS}", f="lavfi")
+    return (
+        ffmpeg.input(
+            "llm_video_generation/assets/background/1.png",
+            loop=1,
+            t=SEG_DUR,
+            framerate=FPS,
+        )
+        .filter("scale", W, H)
+    )
 
 
 def _overlay_characters(base, faces: Dict[str, str]):
     zunda = (
-        ffmpeg.input(f"llm_video_generation/assets/character/ずんだもん/{faces['2']}.png")
+        ffmpeg.input(
+            f"llm_video_generation/assets/character/ずんだもん/{faces['2']}.png"
+        )
         .filter("scale", 400, -1)
         .filter("hflip")
     )
@@ -61,6 +68,29 @@ def _subtitle_box(base):
     )
 
 
+def _image_asset_box(base):
+    return base.drawbox(
+        x="(iw-w)/2",
+        y=f"{H-700}",
+        width=W - 400,
+        height=480,
+        color="white@0.3",
+        thickness="fill",
+    )
+
+
+def _overlay_image_asset(base, url: str | Path):
+    """
+    アスペクト比を保ったまま 880×480 に収まるようにリサイズ→中央配置
+    """
+    img = (
+        ffmpeg.input(str(url), loop=1, t=SEG_DUR, framerate=FPS)
+        .filter("scale", "if(gt(a,720/400),720,-1)", "if(gt(a,720/400),-1,400)")
+        .filter("pad", 880, 480, "(ow-iw)/2", "(oh-ih)/2", "black@0.0")
+    )
+    return ffmpeg.overlay(base, img, x=200, y=0)
+
+
 def _subtitle_text(base, text: str, speaker: str):
     border = "#E7609E" if speaker == "1" else "#6CBB5A"
     return base.drawtext(
@@ -81,28 +111,60 @@ def _subtitle_text(base, text: str, speaker: str):
 
 
 def _segment_ffmpeg_graph(
-    wav_path: Path, text: str, speaker: str, faces: Dict[str, str]
+    wav_path: Path,
+    text: str,
+    speaker: str,
+    faces: Dict[str, str],
+    img_url: str | Path | None = None,
 ):
     bg = _mk_background()
+    bg = _image_asset_box(bg)
+    if img_url:
+        bg = _overlay_image_asset(bg, img_url)
     bg = _overlay_characters(bg, faces)
     bg = _subtitle_box(bg)
     bg = _subtitle_text(bg, text, speaker)
     audio = ffmpeg.input(str(wav_path))
     return bg, audio
 
+
+# ──────────────────────────────
+# 画像キャッシュ helper
+# ──────────────────────────────
+def _cache_images(urls: Sequence[str], work_dir: Path) -> List[Path]:
+    """
+    各 URL を work_dir に asset_001.jpg のような名前で保存し、
+    ローカル Path のリストを返す。既にファイルがあれば再ダウンロードしない。
+    """
+    cached: List[Path] = []
+    for idx, url in enumerate(urls, 1):
+        # 拡張子を推定（URL に無い場合は Content-Type から）
+        ext = Path(url).suffix
+        if not ext:
+            ct = requests.head(url, timeout=5).headers.get("content-type", "")
+            ext = mimetypes.guess_extension(ct) or ".jpg"
+        path = work_dir / f"asset_{idx:03}{ext}"
+        if not path.exists():
+            r = requests.get(url, timeout=15)
+            r.raise_for_status()
+            path.write_bytes(r.content)
+        cached.append(path)
+    return cached
+
+
 # ──────────────────────────────
 # メインクラス
 # ──────────────────────────────
 class VideoAssembler:
     """
-    音声ファイルを書き出さなくても、bytes → wav の一時化で処理できる。
+    音声ファイルを書き出さなくても bytes → wav の一時化で処理できる。
 
     Typical flow
     ------------
         scenario = ScenarioService(...).run(...)
         audio_bytes = TTSPipeline(...).run(scenario)
         assembler = VideoAssembler()
-        assembler.build_full_video(scenario, audio_bytes, "output.mp4")
+        assembler.build_full_video(scenario, audio_bytes, image_urls, "output.mp4")
     """
 
     def __init__(self, temp_dir: str | Path | None = None):
@@ -111,13 +173,13 @@ class VideoAssembler:
 
     # --------------------------------------------------------
     def build_segments(
-        self, scenario: Dict, audio_bytes: Sequence[bytes] | None = None
+        self,
+        scenario: Dict,
+        audio_bytes: Sequence[bytes],
+        image_paths: Sequence[Path],
     ) -> List[Path]:
         """
-        audio_bytes が与えられた場合：
-            index 0 → 001.wav, 1 → 002.wav … として temp_dir に保存して利用
-        audio_bytes が None の場合：
-            ./assets/voice/001.wav … のような既存 WAV を参照（後方互換）
+        各 dialogue セグメントごとに MP4 を作成し、一時ディレクトリに保存。
         """
         segments = _extract_dialogue_segments(scenario)
         if audio_bytes is not None and len(audio_bytes) != len(segments):
@@ -140,7 +202,11 @@ class VideoAssembler:
 
             out = self.temp_dir / f"segment_{idx:03}.mp4"
             video_stream, audio_stream = _segment_ffmpeg_graph(
-                wav_path, text, speaker, current_face
+                wav_path,
+                text,
+                speaker,
+                current_face,
+                image_paths[idx - 1] if image_paths else None,
             )
 
             (
@@ -178,12 +244,18 @@ class VideoAssembler:
     def build_full_video(
         self,
         scenario: Dict,
-        audio_bytes: Sequence[bytes] | None = None,
+        audio_bytes: Sequence[bytes],
+        image_urls: Sequence[str],
         output_path: str | Path = "output.mp4",
     ) -> Path:
-        segs = self.build_segments(scenario, audio_bytes)
+        # ① ネット上の画像を一度だけローカルに保存
+        local_images = _cache_images(image_urls, self.temp_dir)
+
+        # ② セグメント動画生成 → ③ 連結
+        segs = self.build_segments(scenario, audio_bytes, local_images)
         self.concat(segs, output_path)
         return Path(output_path)
+
 
 # ──────────────────────────────
 # 内部 util

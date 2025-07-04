@@ -1,13 +1,15 @@
 {
+  "introduction": {
+    "title": "漢字の幽霊たち：存在しない文字の謎",
+    "points": [
+      "あなたのスマホ、実は幽霊と会話しているかも？"
+    ]
+  },
   "segments": [
     {
       "id": 1,
-      "type": "dialogue",
-      "script": {
-        "speaker": "2",
-        "face": "surprised",
-        "text": "逆平方根って何なのだ？普通の平方根と\nどう違うのだ？"
-      }
+      "type": "topic",
+      "title": "漢字の入力システムの魔法"
     },
     {
       "id": 2,
@@ -15,7 +17,7 @@
       "script": {
         "speaker": "1",
         "face": "normal1",
-        "text": "逆平方根は「1をその数の平方根で割った値」ですわね。例えば、1/√4は0.5ですのよ。"
+        "text": "漢字の入力システムが魔法みたいだと思うのかしら？"
       }
     },
     {
@@ -23,8 +25,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal2",
-        "text": "なるほど！でも、なぜわざわざ逆平方根を\n速く計算したいのだ？"
+        "face": "surprised",
+        "text": "そうなのだ！どうしてそんなに予測が上手いのだ？"
       }
     },
     {
@@ -32,8 +34,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "normal3",
-        "text": "ベクトルの正規化などで使うためですわ。速いと動きが滑らかになりますのよ。"
+        "face": "normal2",
+        "text": "それはね、まるで魔法使いが水晶球で未来を見通すようなものなの。"
       }
     },
     {
@@ -41,8 +43,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal4",
-        "text": "それでゲームとか3Dグラフィックスで重要になるのだね！"
+        "face": "normal3",
+        "text": "そんなに先を見通せるのか！面白いのだ。"
       }
     },
     {
@@ -50,8 +52,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "normal1",
-        "text": "ええ、一見シンプルな数行のコードに深い数学の秘密が隠れているのですのよ。"
+        "face": "normal4",
+        "text": "予測のために、過去のデータや文脈を利用しているのよ。"
       }
     },
     {
@@ -59,8 +61,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "surprised",
-        "text": "どんな秘密があるのだ？教えてほしいのだ！"
+        "face": "normal1",
+        "text": "なるほど。AIのおかげで、存在しない漢字も生成できるのか？"
       }
     },
     {
@@ -69,7 +71,7 @@
       "script": {
         "speaker": "1",
         "face": "normal2",
-        "text": "例えば、ビット操作で近似値を求めたり、魔法の定数が使われていたりしますわ。"
+        "text": "そうですわ。似た形や音から新しい漢字を作る力があるの。"
       }
     },
     {
@@ -78,7 +80,7 @@
       "script": {
         "speaker": "2",
         "face": "surprised",
-        "text": "魔法の定数って名前だけでワクワクするのだ！背景には何があるのだ？"
+        "text": "それってまさに魔法みたいなのだ！"
       }
     },
     {
@@ -87,7 +89,7 @@
       "script": {
         "speaker": "1",
         "face": "normal3",
-        "text": "浮動小数点の構造を巧みに利用し、精度と速さの\nバランスを取っているのですのよ。"
+        "text": "でも、実際は技術的な工夫で、魔法じゃないのよ。"
       }
     },
     {
@@ -95,89 +97,85 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "surprised",
-        "text": "そんな高度な技術が、あの短いコードに詰まっているとは驚きなのだ！"
+        "face": "normal4",
+        "text": "変な漢字もすぐ変換されるのは技術の力？"
       }
     },
     {
       "id": 12,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "surprised",
-        "text": "逆平方根って、ベクトルの正規化に\n必要なのだ？"
+        "speaker": "1",
+        "face": "normal1",
+        "text": "そうですわ。技術的負債という過去の工夫が今に生きているの。"
       }
     },
     {
       "id": 13,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
-        "face": "normal1",
-        "text": "ええ、ベクトルの長さを1にする計算ですわね。\n重要なのは高速処理ですのよ。"
+        "speaker": "2",
+        "face": "normal2",
+        "text": "工夫と負債が魔法っぽさを生むのか！不思議なのだ。"
       }
     },
     {
       "id": 14,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "worry",
-        "text": "なんで高速化がそんなに大事なのだ？"
+        "speaker": "1",
+        "face": "normal3",
+        "text": "まるで古い城の中に隠された宝のようなものね。"
       }
     },
     {
       "id": 15,
-      "type": "dialogue",
-      "script": {
-        "speaker": "1",
-        "face": "normal2",
-        "text": "ゲームでは何百万回も計算するので\n遅いと動きがカクカクしますの。"
-      }
+      "type": "topic",
+      "title": "技術的負債について"
     },
     {
       "id": 16,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "surprised",
-        "text": "例えばFPSゲームでの使い方は\nどうなるのだ？"
+        "speaker": "1",
+        "face": "normal1",
+        "text": "技術的負債って、開発者たちが未来のために積んだ借金ですわね。"
       }
     },
     {
       "id": 17,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
-        "face": "normal3",
-        "text": "キャラの移動方向や光の反射角度の計算に\n役立つのですわ。"
+        "speaker": "2",
+        "face": "normal2",
+        "text": "借金って、どうしてそんなものを積むのだ？"
       }
     },
     {
       "id": 18,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "worry",
-        "text": "それってどれくらい速くなるのだ？"
+        "speaker": "1",
+        "face": "normal3",
+        "text": "急いで機能追加したり、時間がない時に妥協した結果ですのよ。"
       }
     },
     {
       "id": 19,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
+        "speaker": "2",
         "face": "normal4",
-        "text": "従来の方法より3倍以上速い例も\nありますのよ。"
+        "text": "なるほど、いつかは返さないといけないのだね。"
       }
     },
     {
       "id": 20,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "surprised",
-        "text": "そんなに違うとゲームの快適さが\n全然変わるのだな！"
+        "speaker": "1",
+        "face": "normal1",
+        "text": "古いプログラムが新しい機能を邪魔することもありますわ。"
       }
     },
     {
@@ -185,8 +183,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "surprised",
-        "text": "魔法の定数って、いったいどんな数字なのだ？"
+        "face": "normal2",
+        "text": "それってどういうことなのだ？"
       }
     },
     {
@@ -194,8 +192,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "normal1",
-        "text": "これは0x5f3759dfという不思議な\n16進数ですわよ。"
+        "face": "normal3",
+        "text": "実家に帰ったら、昔のおもちゃがまだ残ってるようなものですのよ。"
       }
     },
     {
@@ -203,8 +201,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "worry",
-        "text": "そんな数字、どうして魔法みたいに使えるのだ？"
+        "face": "surprised",
+        "text": "新しいものを置く場所がないってことなのだね！"
       }
     },
     {
@@ -212,8 +210,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "normal2",
-        "text": "浮動小数点のビットを直接操作し、\n近似値を瞬時に得る魔法ですの。"
+        "face": "normal4",
+        "text": "技術的負債を放置すると、システムが幽霊屋敷のように…"
       }
     },
     {
@@ -222,7 +220,7 @@
       "script": {
         "speaker": "2",
         "face": "worry",
-        "text": "ビット操作で計算が速くなるのだ？\nちょっと信じられないのだ。"
+        "text": "怖くなるのだ？どういうことなのだ？"
       }
     },
     {
@@ -230,8 +228,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "normal3",
-        "text": "まるで本のページをめくるように\n数値の中身を読み替える感じですわね。"
+        "face": "normal1",
+        "text": "古いコードが問題を引き起こし、誰も触れたくなくなるのですわ。"
       }
     },
     {
@@ -239,8 +237,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "worry",
-        "text": "ニュートン法と組み合わせると、\nどうして精度が上がるのだ？"
+        "face": "rage",
+        "text": "それは大変なのだ！早めに対処しないとね。"
       }
     },
     {
@@ -248,8 +246,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "normal4",
-        "text": "近似値を繰り返し修正して、真の値に\nグッと近づける技術なのですのよ。"
+        "face": "normal2",
+        "text": "そうですわ。時にはリフォームが必要なのですわよ。"
       }
     },
     {
@@ -257,90 +255,15 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal1",
-        "text": "なるほど、最初は粗くて後から\nキレイに整える感じなのだ。"
-      }
-    },
-    {
-      "id": 30,
-      "type": "dialogue",
-      "script": {
-        "speaker": "1",
-        "face": "normal2",
-        "text": "ええ、そのコンビネーションが高速\n逆平方根の核心ですわね。"
-      }
-    },
-    {
-      "id": 31,
-      "type": "dialogue",
-      "script": {
-        "speaker": "2",
-        "face": "surprised",
-        "text": "このシンプルなコードが、そんなに\nすごい革新を生むのだ？"
-      }
-    },
-    {
-      "id": 32,
-      "type": "dialogue",
-      "script": {
-        "speaker": "1",
-        "face": "normal1",
-        "text": "ええ、わたくしも驚くほどですわ。\n数学の深みとプログラミング技術が絶妙に融合していますのよ。"
-      }
-    },
-    {
-      "id": 33,
-      "type": "dialogue",
-      "script": {
-        "speaker": "2",
-        "face": "normal2",
-        "text": "具体的にはどんな未来が期待できるのだ？"
-      }
-    },
-    {
-      "id": 34,
-      "type": "dialogue",
-      "script": {
-        "speaker": "1",
         "face": "normal3",
-        "text": "例えば、リアルタイム処理のさらなる高速化や省エネ化が進み、\n幅広い分野で応用されそうですわね。"
-      }
-    },
-    {
-      "id": 35,
-      "type": "dialogue",
-      "script": {
-        "speaker": "2",
-        "face": "normal4",
-        "text": "それってゲームだけじゃなくて、もっといろんなところで\n使われるのだ？"
-      }
-    },
-    {
-      "id": 36,
-      "type": "dialogue",
-      "script": {
-        "speaker": "1",
-        "face": "normal1",
-        "text": "その通りですの。医療画像処理やロボット制御など、\n多岐にわたり可能性は無限大ですわ。"
-      }
-    },
-    {
-      "id": 37,
-      "type": "dialogue",
-      "script": {
-        "speaker": "2",
-        "face": "normal2",
-        "text": "最後に、このアルゴリズムからボクたちが\n学べることは？"
-      }
-    },
-    {
-      "id": 38,
-      "type": "dialogue",
-      "script": {
-        "speaker": "1",
-        "face": "normal3",
-        "text": "効率化への創造的なアプローチ、既存の知識を組み合わせる\n力を養うことができますのよ。"
+        "text": "技術もお家も手入れが大事なのだね！"
       }
     }
-  ]
+  ],
+  "conclusion": {
+    "title": "漢字の未来：幽霊たちとの共存",
+    "points": [
+      "存在しない漢字が存在する理由、あなたも少しは理解できたのでは？次は、どんな幽霊に出会うことになるのか…！"
+    ]
+  }
 }

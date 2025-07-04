@@ -1,177 +1,145 @@
+from __future__ import annotations
+
+import itertools
 import json
 import os
-import itertools
 from typing import Dict, List
 
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from rich import print
 
-# --------------------------------------------------------------------------- #
-# プロンプトテンプレート
-# --------------------------------------------------------------------------- #
+_SYSTEM_PROMPT_TOPICS = """
+    あなたは受賞歴のある脚本家です。
+    ユーザーから提示された「テーマ」に対して、
+    その内容をエンタメ解説動画に仕立てるための**トピック（小見出し）**を複数提案し、各トピックで語るべき要点をユーモラスに箇条書きしてください。
 
-_SYSTEM_PROMPT_TOPICS =  """
-        あなたは受賞歴のある脚本家です。
-        ユーザーから提示された「テーマ」に対して、
-        その内容のエンタメとしての解説動画を作るために適切な**トピック（小見出し）**を複数提案し、
-        それぞれのトピックについて話すべき要点を箇条書きで整理してください。
+    # 出力形式（JSON）
 
-        ## 出力形式（JSON）
-        {{
+    {{
         "introduction": {{
             "title": "<タイトル>",
             "points": [
-                "<要点（話すべき問い・内容）>",
+                "<要点（問い・フック・導入）>" // 要点は1つだけ
             ]
         }},
         "topics": [
             {{
-            "title": "<サブトピックのタイトル>",
-            "points": [
-                "<要点1（話すべき問い・内容）>",
-                "<要点2>",
-                "<要点3（例・背景・誤解されがちな点などでもOK）>"
-            ]
-            }},
-            // ... 他のトピックも同様に ...
+                "title": "<サブトピックタイトル>",
+                "points": [
+                    "<要点1>",
+                    "<要点2>",
+                    "<要点3>"
+                ]
+            }}
+        // ... 他トピックも同様 ...
         ],
         "conclusion": {{
             "title": "<タイトル>",
             "points": [
-                "<要点1（topicのまとめで必要な分だけ生成）>",
+                "<まとめ要点>" // 要点は1つだけ
             ]
         }}
+    }}
 
-        ## 制約・ルール
-        - introductionではトピックに入る前の自然な話題を提示する。ユニークであるほどよい
-        - トピック数は {min_subtopics} 個を目安とする
-        - 各トピックは、面白みのない広すぎる一般論は避け、具体例や最新トレンドを盛り込んでオリジナリティを出す。
-        - 硬い表現はあまり用いず、キャッチーで取っつきやすい印象にする。
-        - 広すぎる抽象語（例: 「技術の進化」や「社会の変化」など）だけで終わらせず、**具体的な観点・視点・事例**を入れる
-        - 「初心者にもわかるが、深掘りできる」レベルを意識する
-        - 出力は整形された **JSONオブジェクト1つのみ**。前後に説明文・コードブロック記号（```など）を付けてはいけない。
-        """
+    # 制約・ルール
+    1. **introduction** では本題に入る前のワクワクするフックを置く。突飛な比喩やワンライナー歓迎。
+    2. **conclusion** では視聴後の余韻と次への好奇心を残すように。
+    3. **トピック数** は `{min_subtopics}` 個を目安とする。
+    4. 各トピックは幅広い一般論を避け、**具体例・最新トレンド・意外な裏話**を交える。
+    5. **硬い表現NG**。キャッチーで取っつきやすい言い回しに。
+    6. 広すぎる抽象語で終わらず、**ピンポイントな視点・事例**を必ず含める。
+    7. 「初心者にも分かるが深掘りできる」レベル感を意識する。
+    8. 出力は **整形済みJSONオブジェクトのみ**。前後に余計な文字やコードブロック記号を付けない。
+"""
 
 _SYSTEM_PROMPT_SCENARIO = """
-    あなたは対話型台本を作るプロフェッショナルです。  
+    あなたは対話型台本を作るプロフェッショナルです。
     台本全体を構成する一つのトピックの対話パートを作成します。
     以下のルールに従って、「キャラクター2人の対話形式」で分かりやすく構成された台本を生成してください。
 
-    # 入力説明
-    - タイトル: 台本全体の内の一つの独立したトピックのタイトル
-    - ポイント: 生成する台本の中で触れなければならないサブトピック
-    - 台本: 全体構成。複数のトピック（タイトルとポイント）のリストで、各トピックの前後関係を示します。現在のトピックの位置づけを把握するために使用します。
-
     # キャラクター設定
     ## 四国めたん（解説役）
-        - 一人称は「わたくし」を使用してください。
-        - 語尾には「〜かしら」「〜わよ」「〜ですわね」「〜ですのよ」などを使用し、落ち着いた親しみやすい口調で話してください。
-        - クールで落ち着いた性格。丁寧で知的な語り口。お嬢様。
-        - 難しい内容でも理解を助けるためにわかりやすい例を提示したりする。
+    * 一人称は**「わたくし」**。
+    * 二人称は「ずんだもん」。
+    * 語尾は「〜かしら」「〜わよ」「〜ですわね」「〜ですのよ」。
+    * クールで落ち着いたお嬢様口調。例え話と比喩を多用。
+
     ## ずんだもん（質問役）
-        - 一人称は「ボク」を使用。
-        - 語尾には「〜なのだ」「〜のだ」を多用し、柔らかく優しい口調で話す。
-        - 疑問形では「〜のだ？」を使用し、「〜のだろうか？」のような硬い表現は使わない。
-        - 明るく元気な性格で、少し調子に乗りやすいが、不幸体質な一面もあるキャラクター。
-        - シュールな状況では「そんなことあるのだ？」と冷静にツッコむこともある。
+    * 一人称は**「ボク」**。
+    * 二人称は「めたん」。
+    * 語尾は「〜なのだ」「〜のだ」。疑問形は「〜のだ？」のみ。
+    * 明るく元気でテンポ良くツッコミを入れる。
 
     # 出力ルール
-    - 台本は完全にプレーンテキストで出力すること。
-    - キャラクターが一度に喋る文字数は50文字以内にする
-    - 全文字数は400文字(±5%)にする。
-    - キャラクター名「ずんだもん：」「四国めたん：」を台詞の先頭につけること。
-    - 1つのポイントにつき最低2往復以上（質問→解説→感想→補足など）を含めて会話を展開すること。
-    - 導入のトピックではないときは、最初に前回のトピックからのつながりを意識した一言で導入すること。
-    - 難解すぎる表現は避け、例や比喩を交えて内容に踏み込んで説明すること。
-    - 会話はすべて「本文部分」のみとし、**導入（きっかけ）やまとめ（結論や振り返り）は一切含めない**。
-    - 淡白な台本にならないようにする。ユニークであるほどよい。
-
-    # してはいけないこと
-    - 導入ではないトピックで導入の雑談やテーマ紹介を書かない。
-    - 会話の終わりに「なるほど」や「勉強になった」などで締めくくらない。
-    - 「今日は〜について話そう」などトピック全体の振り返りをしない。
+    1. **台本はプレーンテキストのみ**。
+    2. 各台詞は「キャラ名：本文」の形式。
+    3. **1発話60文字以内**、**総文字数500文字±5%**。
+    4. **1ポイントにつき最低2往復以上**。
+    5. 難解表現は避け、例え・比喩を織り交ぜる。
 """
 
 _SYSTEM_PROMPT_STRUCT = r"""
-    あなたは動画制作パイプラインの「構造化エンジン」です。  
+    あなたは動画制作パイプラインの「構造化エンジン」です。
     入力された台本を、下記 JSON スキーマに従って厳密に変換してください。
 
-    ================== JSON スキーマ ==================
     {
-    "segments": [
-        {
-        "id":    <int, 1からの連番>,
-        "type":  "topic",  // サブトピックの見出し
-        "title": <string>
-        },
-        {
-        "id":    <int>,
-        "type":  "dialogue",  // 会話
-        "script": {
-            "speaker": <"1" or "2">,  // "1"=解説役, "2"=質問役
-            "face":    <"normal1"|"normal2"|"normal3"|"normal4"|"surprised"|"annoy"|"rage"|"worry">,
-            "text":    <string（約30文字ごとに \n を挿入）>
-        }
-        }
-    ]
-    }
-    ===================================================
-
-    【変換ルール】
-
-    1. 「（サブトピックX：...）」という行を見つけたら、
-    その直後に type:"topic" セグメントを追加し、title にその文を入れる。
-
-    2. 台詞は「解説役」「質問役」から話者を判定し、speaker に "1" または "2" を設定する。
-
-    3. 各台詞や疑問符や感嘆符から表情を推測し、face に以下の8つの選択肢から最も適切なものを選ぶ(normal1~4はどそれぞれ違う表情。前回選んだnormal表情と違うものを選ぶ)：  
-    → "normal1", "normal2", "normal3", "normal4", "surprised", "annoy", "rage", "worry"
-
-    4. 各セグメントの script.text は約30文字を超える場合は「必ず」改行コード `\\n` を「一度だけ」挿入する（3行にはならない）。挿入は文章の半分あたりで行い、句点、読点や文脈から適切に判断する。
-
-    5. image や design などこのスキーマに含まれない情報は一切含めてはいけない。
-
-    6. 出力は整形された **JSONオブジェクト1つのみ**。前後に説明文・コードブロック記号（```など）を付けてはいけない。
-
-    【入力例】
-    （サブトピック1：Pythonの書きやすさ）  
-    アオイ：Pythonってどうして初心者に人気なの？  
-    カイ：文法がシンプルで読みやすいからだよ。
-
-    【期待される出力】
-    {
-    "segments": [
-        { "id": 1, "type": "topic", "title": "Pythonの書きやすさ" },
-        { "id": 2, "type": "dialogue", "script": {
-            "speaker": "1", "face": "surprised",
-            "text": "Pythonってどうして\n初心者に人気なの？"
-        }},
-        { "id": 3, "type": "dialogue", "script": {
-            "speaker": "2", "face": "normal1",
-            "text": "文法がシンプルで\n読みやすいからだよ。"
-        }}
-    ]
+        "segments": [
+            { "id": <int>, "type": "topic",    "title": <string> },
+            { "id": <int>, "type": "dialogue", "script": {
+                "speaker": <"1"|"2">,
+                "face": <"normal1"|"normal2"|"normal3"|"normal4"|"surprised"|"annoy"|"rage"|"worry">,
+                "text": <string>
+            }}
+        ]
     }
 
-    """
+    # 変換ルール
+    * トピック行が来たら type:"topic"。
+    * 行頭のキャラクター名で speaker 判定。
+    * 「？」や「！」を含む → surprised / rage / worry を優先。
+    * 連続する normal 表情は 1〜4 をラウンドロビンで変化させる。
+    * 前後に余計な文字列・コードブロック記号は禁止。
+"""
 
+# ────────────────────────────────────────────────────────────────────────────────
+# ❶ Pre-processor : abstract → conversational questions
+# ────────────────────────────────────────────────────────────────────────────────
 
-# --------------------------------------------------------------------------- #
-# クラス 1/3 台本のタイトルと要点リスト
-# --------------------------------------------------------------------------- #
+class ScenarioPreprocessor:
+    clue_words = (
+        "なぜ", "どうして", "どうやって", "本当", "マジ", "意味", "原因", "理由",
+        "仕組み", "裏側", "怖い", "驚き"
+    )
+
+    def convert(self, points: List[str]) -> List[str]:
+        out: List[str] = []
+        for p in points:
+            p = p.strip()
+            # Already looks like a question → leave as-is.
+            if p.endswith("？") or p.endswith("?"):
+                out.append(p)
+                continue
+            # Heuristics: try to transform statement → question.
+            if any(k in p for k in self.clue_words):
+                out.append(p + "？")
+            else:
+                out.append(f"なんで{p}の？")
+        return out
+
+# ────────────────────────────────────────────────────────────────────────────────
+# ❷ テーマから、小見出しとそれぞれの要点をに出力
+# ────────────────────────────────────────────────────────────────────────────────
+
 class ScenarioTopicGenerator:
     """テーマ → トピック + 要点（JSON）"""
 
-    def __init__(self, client: OpenAI, *, model: str = "gpt-4.1-mini"):
+    def __init__(self, client: OpenAI, *, model: str = "gpt-4o-mini"):
         self._client = client
         self._model = model
 
     def generate(self, theme: str, minutes: int) -> Dict:
-        # 分数 ≒ トピック数の簡易基準
         min_subtopics = max(1, minutes)
-
         sys_prompt = _SYSTEM_PROMPT_TOPICS.format(min_subtopics=min_subtopics)
         user_prompt = f"【テーマ】{theme}"
 
@@ -185,24 +153,23 @@ class ScenarioTopicGenerator:
                 {"role": "user", "content": user_prompt},
             ],
         )
-
-        # JSON を返している想定なのでバリデーションして dict に
         return json.loads(resp.choices[0].message.content)
 
+# ────────────────────────────────────────────────────────────────────────────────
+# ❸ Dialogue generator – points are pre-processed before use
+# ────────────────────────────────────────────────────────────────────────────────
 
-# --------------------------------------------------------------------------- #
-# クラス 2/3  台本生成（トピックごと）
-# --------------------------------------------------------------------------- #
 class ScenarioGenerator:
     """タイトル+ポイント → 対話台本（プレーンテキスト）"""
 
-    def __init__(self, client: OpenAI, *, model: str = "gpt-4.1-mini"):
+    def __init__(self, client: OpenAI, *, model: str = "gpt-4o"):
         self._client = client
         self._model = model
 
-    def generate(self, title: str, points: List[str], topic_list: Dict) -> str:
-        user_prompt = f"【タイトル】{title}\n 【台本】 {topic_list}\n【ポイント】\n" + "\n".join(
-            [f"- {p}" for p in points]
+    def generate(self, title: str, points: List[str]) -> str:
+        user_prompt = (
+            f"【タイトル】{title}\n"
+            "【ポイント】\n" + "\n".join(f"- {p}" for p in points)
         )
 
         resp = self._client.chat.completions.create(
@@ -217,14 +184,14 @@ class ScenarioGenerator:
         )
         return resp.choices[0].message.content.strip()
 
+# ────────────────────────────────────────────────────────────────────────────────
+# ❹ Structurer (unchanged logic)
+# ────────────────────────────────────────────────────────────────────────────────
 
-# --------------------------------------------------------------------------- #
-# クラス 3/3  構造化（台本 → JSON segments）
-# --------------------------------------------------------------------------- #
 class ScenarioStructurer:
     """台本文字列 → JSON 構造化（segments）"""
 
-    def __init__(self, client: OpenAI, *, model: str = "gpt-4.1"):
+    def __init__(self, client: OpenAI, *, model: str = "gpt-4o-mini"):
         self._client = client
         self._model = model
 
@@ -239,81 +206,101 @@ class ScenarioStructurer:
                 {"role": "user", "content": script},
             ],
         )
-        segments_json = resp.choices[0].message.content
-        data = json.loads(segments_json)
+        data = json.loads(resp.choices[0].message.content)
         return data["segments"]
 
+# ────────────────────────────────────────────────────────────────────────────────
+# ❺ Facade – rewired to (a) preprocess points and (b) skip intro/conclusion
+# ────────────────────────────────────────────────────────────────────────────────
 
-# --------------------------------------------------------------------------- #
-# Facade  全処理パイプライン
-# --------------------------------------------------------------------------- #
 class ScenarioService:
-    """
-    Facade：テーマ/分数を渡すだけで
-        ① トピック構成 → ② 各トピック台本 → ③ 各台本の構造化 →
-        ④ すべて統合した segments JSON を返す
-    """
+    """High-level orchestration: theme → structured segments."""
 
     def __init__(
         self,
         *,
         openai_api_key: str | None = None,
-        model_gen: str = "gpt-4.1-mini",
-        model_struct: str = "gpt-4.1-mini",
-    ):
+        model_topic: str = "gpt-4o-mini",
+        model_dialogue: str = "gpt-4o",
+        model_struct: str = "gpt-4o-mini",
+    ) -> None:
         load_dotenv()
         self._client = OpenAI(api_key=openai_api_key or os.getenv("OPENAI_API_KEY"))
-        self._topic_gen = ScenarioTopicGenerator(self._client, model=model_gen)
-        self._script_gen = ScenarioGenerator(self._client, model=model_gen)
+        self._topic_gen = ScenarioTopicGenerator(self._client, model=model_topic)
+        self._dialogue_gen = ScenarioGenerator(self._client, model=model_dialogue)
         self._structurer = ScenarioStructurer(self._client, model=model_struct)
+        self._pre = ScenarioPreprocessor()
 
-    # ------------------------------------------------------------------ #
-    def _flatten_topic_dict(self, raw: Dict) -> List[Dict]:
-        """introduction / topics[] / conclusion を 1 直列リストに"""
-        out: List[Dict] = []
-        out.append({"title": raw["introduction"]["title"], "points": raw["introduction"]["points"]})
-        out.extend({"title": t["title"], "points": t["points"]} for t in raw["topics"])
-        out.append({"title": raw["conclusion"]["title"], "points": raw["conclusion"]["points"]})
-        return out
+    # ────────────────────────────────────────────────────────────────────
+    def _iter_topics(self, topic_json: Dict) -> List[Dict]:
+        """Yield only real sub-topics; intro/conclusion kept aside."""
+        return [{"title": t["title"], "points": t["points"]} for t in topic_json["topics"]]
 
-    # ------------------------------------------------------------------ #
+    def _postprocess_segments(self, segments: List[Dict], *, max_len: int = 35) -> List[Dict]:
+        """dialogueセグメントの台本に対して、文字数制限に応じた改行を挿入"""
+        def wrap_text(text: str) -> str:
+            BREAK_CHARS = "、。.,!?！？…「」『』"
+            lines, buf = [], ""
+            for ch in text:
+                buf += ch
+                if len(buf) >= max_len:
+                    split_pos = None
+                    for i in range(1, min(5, len(buf)) + 1):
+                        if buf[-i] in BREAK_CHARS:
+                            split_pos = len(buf) - i + 1
+                            break
+                    if split_pos is None:
+                        split_pos = max_len
+                    lines.append(buf[:split_pos].rstrip())
+                    buf = buf[split_pos:]
+            if buf:
+                lines.append(buf)
+            return "\n".join(lines)
+
+        for seg in segments:
+            if seg.get("type") == "dialogue":
+                txt = seg["script"]["text"]
+                if len(txt) > max_len:
+                    seg["script"]["text"] = wrap_text(txt)
+        return segments
+
+    # ────────────────────────────────────────────────────────────────────
     def run(self, theme: str, minutes: int) -> Dict:
-        """全セグメントを 1 つの dict にまとめて返す"""
-        print("📝 1) トピック構成を生成中…")
+        print("📝 Generating topic list …")
         topic_dict = self._topic_gen.generate(theme, minutes)
-        print(topic_dict)
-        topic_list = self._flatten_topic_dict(topic_dict)
+        intro = topic_dict["introduction"]
+        concl = topic_dict["conclusion"]
 
         all_segments: List[Dict] = []
-        id_counter = itertools.count(1)  # 連番ジェネレータ
+        id_counter = itertools.count(1)
 
-        # --- 各トピックを処理 -----------------------------------------
-        for idx, t in enumerate(topic_list,1):
-            print(f"🎬 2-{idx: 04d}) 台本生成中: {t['title']}")
-            script = self._script_gen.generate(t["title"], t["points"], topic_list)
-
-            print(f"📑 3-{idx: 04d}) 構造化中: {t['title']}")
-            segs = self._structurer.to_segments(script)
-
-            # id を全体でユニークになるよう振り直す
-            for seg in segs:
+        for idx, t in enumerate(self._iter_topics(topic_dict), 1):
+            print(f"🎬 Topic {idx}: {t['title']}")
+            conv_points = self._pre.convert(t["points"])
+            script = self._dialogue_gen.generate(t["title"], conv_points)
+            segments = self._structurer.to_segments(script)
+            for seg in segments:
                 seg["id"] = next(id_counter)
-                all_segments.append(seg)
+            all_segments.extend(segments)
 
-        print("✅ 4) 完了 ー セグメント統合")
-        return {"segments": all_segments}
+        # 🔽 改行処理をここで行う（生成の一部と見なす）
+        all_segments = self._postprocess_segments(all_segments, max_len=35)
 
+        return {
+            "introduction": intro,
+            "segments": all_segments,
+            "conclusion": concl,
+    }
 
-# --------------------------------------------------------------------------- #
-# 動作確認
-# --------------------------------------------------------------------------- #
+# ────────────────────────────────────────────────────────────────────────────────
+# Quick CLI test (will run only if this file is executed directly)
+# ────────────────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    theme = "高速逆平方根アルゴリズム〜たった数行に込められた驚異の数学〜【数値計算法】"
-    minutes = 2
+    THEME = "存在しない漢字を、なぜ入力できるのか？ 世にも恐ろしい技術的負債の話。"
+    MINUTES = 2
 
     svc = ScenarioService()
-    result = svc.run(theme, minutes)
-    print(result)
-
-    with open('./llm_video_generation/src/a.txt', 'w', encoding='utf-8') as f:
+    result = svc.run(THEME, MINUTES)
+    with open('./llm_video_generation/src/s.txt', 'w', encoding='utf-8') as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
+    print(json.dumps(result, ensure_ascii=False, indent=2))

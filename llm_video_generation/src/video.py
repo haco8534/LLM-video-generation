@@ -1,12 +1,18 @@
-"""
-video.py
-────────────────────────────────────────────────────────
-・構造化台本(dict) と音声(bytes)リストを入力
-・キャラクター画像／字幕付き 720p MP4 をセグメントごとに生成
-・最後に連結して 1 本の動画に出力
-"""
-
 from __future__ import annotations
+
+"""
+動画生成パイプライン（dialogue + topic 転換クリップ対応）
+------------------------------------------------------
+- 入力 : 構造化シナリオ(dict) と dialogue セグメント数分の音声 bytes[]
+- 出力 : 1280×720 / 30 fps / AAC 48 kHz stereo / H.264 MP4
+
+シナリオ中に `{"type": "topic", "title": "..."}` が現れたら
+その場で 3 秒の場面転換クリップ (背景 2.png + タイトル文字) を挿入する。
+
+依存:
+- FFmpeg (ffmpeg-python ラッパ)
+- requests, rich
+"""
 
 import mimetypes
 import tempfile
@@ -22,36 +28,45 @@ from rich import print
 # ──────────────────────────────
 W, H = 1280, 720
 FPS = 30
-SEG_DUR = 1          # 秒
+DIALOGUE_DUR = 1      # dialogue セグメント長 (秒)
+TOPIC_DUR    = 3      # topic   セグメント長 (秒)
+
 FONT = "C:/Windows/Fonts/meiryo.ttc"
+
+# concat で -c copy するため、すべての音声ストリーム仕様を統一
+SAMPLE_RATE   = 48_000    # Hz
+CHANNEL_LAYOUT = "stereo" # "mono" なら mono で統一
+
+# 背景画像パス
+BG_DIALOGUE = "llm_video_generation/assets/background/3.png"
+BG_TOPIC    = "llm_video_generation/assets/background/2.png"
+
+# キャラクター画像ベースパス
+CHAR_ROOT = "llm_video_generation/assets/character"
 
 # ──────────────────────────────
 # 低レイヤ helper
 # ──────────────────────────────
-def _mk_background():
+
+def _mk_background(path: str, dur: int):
+    """静止画を指定秒数ループさせる背景 video stream"""
     return (
-        ffmpeg.input(
-            "llm_video_generation/assets/background/1.png",
-            loop=1,
-            t=SEG_DUR,
-            framerate=FPS,
-        )
+        ffmpeg.input(path, loop=1, t=dur, framerate=FPS)
         .filter("scale", W, H)
     )
 
 
 def _overlay_characters(base, faces: Dict[str, str]):
+    """ずんだもん & 四国めたん を所定位置に合成"""
     zunda = (
-        ffmpeg.input(
-            f"llm_video_generation/assets/character/ずんだもん/{faces['2']}.png"
-        )
+        ffmpeg.input(f"{CHAR_ROOT}/ずんだもん/{faces['2']}.png")
         .filter("scale", 400, -1)
         .filter("hflip")
     )
     base = ffmpeg.overlay(base, zunda, x=-50, y=250)
 
     metan = (
-        ffmpeg.input(f"llm_video_generation/assets/character/四国めたん/{faces['1']}.png")
+        ffmpeg.input(f"{CHAR_ROOT}/四国めたん/{faces['1']}.png")
         .filter("scale", 400, -1)
     )
     return ffmpeg.overlay(base, metan, x=950, y=250)
@@ -60,7 +75,7 @@ def _overlay_characters(base, faces: Dict[str, str]):
 def _subtitle_box(base):
     return base.drawbox(
         x="(iw-w)/2",
-        y=f"{H-180}",
+        y=str(H - 180),
         width=W,
         height=200,
         color="black@0.6",
@@ -71,7 +86,7 @@ def _subtitle_box(base):
 def _image_asset_box(base):
     return base.drawbox(
         x="(iw-w)/2",
-        y=f"{H-700}",
+        y=str(H - 700),
         width=W - 400,
         height=480,
         color="white@0.3",
@@ -80,11 +95,9 @@ def _image_asset_box(base):
 
 
 def _overlay_image_asset(base, url: str | Path):
-    """
-    アスペクト比を保ったまま 880×480 に収まるようにリサイズ→中央配置
-    """
+    """外部画像を 880×480 に収め中央配置"""
     img = (
-        ffmpeg.input(str(url), loop=1, t=SEG_DUR, framerate=FPS)
+        ffmpeg.input(str(url), loop=1, t=DIALOGUE_DUR, framerate=FPS)
         .filter("scale", "if(gt(a,720/400),720,-1)", "if(gt(a,720/400),-1,400)")
         .filter("pad", 880, 480, "(ow-iw)/2", "(oh-ih)/2", "black@0.0")
     )
@@ -106,39 +119,137 @@ def _subtitle_text(base, text: str, speaker: str):
         shadowx=2,
         shadowy=2,
         line_spacing=10,
-        enable="between(t,0,5)",
     )
 
 
-def _segment_ffmpeg_graph(
+def _topic_text_overlay(base, topic: str):
+    """dialogue セグメント右上に現在のトピックを表示"""
+    if not topic:
+        return base
+    return base.drawtext(
+        text=topic,
+        fontfile=FONT,
+        fontsize=40,
+        fontcolor="white",
+        x="w-text_w-40",
+        y="40",
+        borderw=1,
+        bordercolor="white",
+        shadowcolor="black",
+        shadowx=2,
+        shadowy=2,
+    )
+
+# --------------------------------------
+# FFmpeg graph builders
+# --------------------------------------
+
+def _build_dialogue_graph(
     wav_path: Path,
     text: str,
     speaker: str,
     faces: Dict[str, str],
+    topic: str = "",
     img_url: str | Path | None = None,
 ):
-    bg = _mk_background()
+    """音声付き dialogue セグメント"""
+    bg = _mk_background(BG_DIALOGUE, DIALOGUE_DUR)
     bg = _image_asset_box(bg)
     if img_url:
         bg = _overlay_image_asset(bg, img_url)
     bg = _overlay_characters(bg, faces)
     bg = _subtitle_box(bg)
     bg = _subtitle_text(bg, text, speaker)
-    audio = ffmpeg.input(str(wav_path))
+    bg = _topic_text_overlay(bg, topic)
+
+    audio = (
+        ffmpeg.input(str(wav_path))
+        .filter("aresample", SAMPLE_RATE)
+        .filter("aformat", channel_layouts=CHANNEL_LAYOUT)
+    )
     return bg, audio
 
+
+def _build_topic_graph(title: str):
+    rect_w, rect_h = 950, 570
+    bg = _mk_background(BG_TOPIC, TOPIC_DUR)
+
+    # 動的フォントサイズ（2文字ごとに10下げる）
+    max_fontsize = 75
+    min_fontsize = 55
+    step = 1
+    step_size = 10
+    base_length = 11
+
+    length = len(title)
+    decrement = ((length - base_length) // step) * step_size
+    fontsize = max(min_fontsize, max_fontsize - decrement)
+
+    # --- 背景・矩形・下線 -----------------------
+    bg = bg.drawbox(
+        x=f"(iw-{rect_w})/2 - 80",
+        y=f"(ih-{rect_h})/2 + 20",
+        width=rect_w,
+        height=rect_h,
+        color="#9DA7EB",
+        thickness="fill",
+    )
+    bg = bg.drawbox(
+        x=f"(iw-{rect_w})/2 - 100",
+        y=f"(ih-{rect_h})/2",
+        width=rect_w,
+        height=rect_h,
+        color="#7281E3@0.8",
+        thickness="fill",
+    )
+    bg = bg.drawbox(
+        x=f"(iw-{rect_w})/2 - 80",
+        y=f"(ih-{rect_h})/2 + 340",
+        width=rect_w - 35,
+        height=3,
+        color="white",
+        thickness="fill",
+    )
+
+    # --- タイトルテキスト -----------------
+    bg = bg.drawtext(
+        text=title,
+        fontfile="C:/Windows/Fonts/meiryob.ttc",
+        fontsize=fontsize,
+        fontcolor="orange",
+        x="(w-text_w)/2 - 100",
+        y="(h-text_h)/2",
+        borderw=4,
+        bordercolor="white",
+        shadowcolor="black",
+        shadowx=2,
+        shadowy=2,
+    )
+
+    # --- キャラクター ----------------------
+    char = (
+        ffmpeg.input(f"{CHAR_ROOT}/ずんだもん/think.png", loop=1, t=TOPIC_DUR, framerate=FPS)
+        .filter("scale", 700, -1)
+    )
+    bg = ffmpeg.overlay(bg, char, x=780, y=50)
+
+    # --- 無音音声 --------------------------
+    audio = ffmpeg.input(
+        f"anullsrc=channel_layout={CHANNEL_LAYOUT}:sample_rate={SAMPLE_RATE}",
+        format="lavfi",
+        t=TOPIC_DUR,
+    )
+
+    return bg, audio
 
 # ──────────────────────────────
 # 画像キャッシュ helper
 # ──────────────────────────────
+
 def _cache_images(urls: Sequence[str], work_dir: Path) -> List[Path]:
-    """
-    各 URL を work_dir に asset_001.jpg のような名前で保存し、
-    ローカル Path のリストを返す。既にファイルがあれば再ダウンロードしない。
-    """
+    """URL 画像を work_dir に保存し Path のリストを返す"""
     cached: List[Path] = []
     for idx, url in enumerate(urls, 1):
-        # 拡張子を推定（URL に無い場合は Content-Type から）
         ext = Path(url).suffix
         if not ext:
             ct = requests.head(url, timeout=5).headers.get("content-type", "")
@@ -151,25 +262,22 @@ def _cache_images(urls: Sequence[str], work_dir: Path) -> List[Path]:
         cached.append(path)
     return cached
 
+# ──────────────────────────────
+# VideoAssembler
+# ──────────────────────────────
 
-# ──────────────────────────────
-# メインクラス
-# ──────────────────────────────
 class VideoAssembler:
-    """
-    音声ファイルを書き出さなくても bytes → wav の一時化で処理できる。
-
-    Typical flow
-    ------------
-        scenario = ScenarioService(...).run(...)
-        audio_bytes = TTSPipeline(...).run(scenario)
-        assembler = VideoAssembler()
-        assembler.build_full_video(scenario, audio_bytes, image_urls, "output.mp4")
-    """
+    """Scenario + 音声 bytes[] からフル動画を組み立てる"""
 
     def __init__(self, temp_dir: str | Path | None = None):
         self.temp_dir = Path(temp_dir) if temp_dir else Path(tempfile.mkdtemp())
         self.temp_dir.mkdir(parents=True, exist_ok=True)
+
+    # --------------------------------------------------------
+    def _write_wav(self, data: bytes, idx: int) -> Path:
+        path = self.temp_dir / f"voice_{idx:03}.wav"
+        path.write_bytes(data)
+        return path
 
     # --------------------------------------------------------
     def build_segments(
@@ -178,59 +286,55 @@ class VideoAssembler:
         audio_bytes: Sequence[bytes],
         image_paths: Sequence[Path],
     ) -> List[Path]:
-        """
-        各 dialogue セグメントごとに MP4 を作成し、一時ディレクトリに保存。
-        """
-        segments = _extract_dialogue_segments(scenario)
-        if audio_bytes is not None and len(audio_bytes) != len(segments):
-            raise ValueError("audio_bytes の個数が dialogue セグメント数と一致しません")
-
-        current_face = {"1": "normal1", "2": "normal1"}
+        """シナリオを逐次走査し、各 type に応じて MP4 セグメントを書き出す"""
         paths: List[Path] = []
+        current_face = {"1": "normal1", "2": "normal1"}
+        current_topic = ""
+        audio_idx = 0  # dialogue ごとに消費
+        img_idx = 0    # dialogue ごとに消費
 
-        for idx, seg in enumerate(segments, 1):
-            text, speaker, face = seg["text"], seg["speaker"], seg["face"]
-            if idx != 1:
-                current_face[speaker] = face  # 表情更新
+        for seq_idx, seg in enumerate(scenario["segments"], 1):
+            # topic --------------------------------------------------
+            if seg["type"] == "topic":
+                current_topic = seg.get("title", "")
+                v, a = _build_topic_graph(current_topic)
+            # dialogue ----------------------------------------------
+            elif seg["type"] == "dialogue":
+                sc = seg["script"]
+                text, speaker, face = sc["text"], sc["speaker"], sc["face"]
+                if paths:
+                    current_face[speaker] = face
 
-            # --- 音声ファイルを用意 ----------------------------------
-            if audio_bytes is not None:
-                wav_path = self.temp_dir / f"{idx:03}.wav"
-                wav_path.write_bytes(audio_bytes[idx - 1])
+                wav_path = self._write_wav(audio_bytes[audio_idx], audio_idx) if audio_bytes else Path(f"./assets/voice/{audio_idx:03}.wav")
+                img_path = image_paths[img_idx] if img_idx < len(image_paths) else None
+
+                v, a = _build_dialogue_graph(
+                    wav_path, text, speaker, current_face.copy(), current_topic, img_path
+                )
+
+                audio_idx += 1
+                img_idx += 1
             else:
-                wav_path = Path(f"./assets/voice/{idx:03}.wav")
+                continue  # 不明タイプはスキップ
 
-            out = self.temp_dir / f"segment_{idx:03}.mp4"
-            video_stream, audio_stream = _segment_ffmpeg_graph(
-                wav_path,
-                text,
-                speaker,
-                current_face,
-                image_paths[idx - 1] if image_paths else None,
-            )
-
+            out = self.temp_dir / f"seg_{seq_idx:03}.mp4"
             (
                 ffmpeg.output(
-                    video_stream,
-                    audio_stream,
-                    str(out),
-                    vcodec="libx264",
-                    acodec="aac",
-                    pix_fmt="yuv420p",
-                    movflags="faststart",
+                    v, a, str(out),
+                    vcodec="libx264", acodec="aac",
+                    pix_fmt="yuv420p", movflags="faststart",
                     loglevel="error",
-                )
-                .overwrite_output()
-                .run()
+                ).overwrite_output().run()
             )
             paths.append(out)
         return paths
 
     # --------------------------------------------------------
-    def concat(self, segment_files: List[Path], output: str | Path):
+    def concat(self, seg_files: List[Path], output: str | Path):
+        """concat demuxer (-c copy) で結合"""
         list_file = self.temp_dir / "concat_list.txt"
         with list_file.open("w", encoding="utf-8") as f:
-            for p in segment_files:
+            for p in seg_files:
                 f.write(f"file '{p.resolve()}'\n")
 
         (
@@ -248,28 +352,10 @@ class VideoAssembler:
         image_urls: Sequence[str],
         output_path: str | Path = "output.mp4",
     ) -> Path:
-        # ① ネット上の画像を一度だけローカルに保存
+        """シナリオ + 音声 + 画像 URL から output_path に MP4 を生成"""
         local_images = _cache_images(image_urls, self.temp_dir)
 
         # ② セグメント動画生成 → ③ 連結
         segs = self.build_segments(scenario, audio_bytes, local_images)
         self.concat(segs, output_path)
         return Path(output_path)
-
-
-# ──────────────────────────────
-# 内部 util
-# ──────────────────────────────
-def _extract_dialogue_segments(scenario: Dict):
-    """
-    {text, speaker, face} を順番に返す
-    """
-    return [
-        {
-            "text": seg["script"]["text"],
-            "speaker": seg["script"]["speaker"],
-            "face": seg["script"]["face"],
-        }
-        for seg in scenario["segments"]
-        if seg["type"] == "dialogue"
-    ]

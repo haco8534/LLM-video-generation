@@ -195,7 +195,7 @@ class TTSPipeline:
 
 if __name__ == "__main__":
     # サンプルシナリオのパスをプロジェクト構成に合わせて修正
-    scenario_path = Path("./llm_video_generation/src/a.txt")
+    scenario_path = Path("./llm_video_generation/src/s.txt")
     scenario = json.loads(scenario_path.read_text(encoding="utf-8"))
 
     char_style = {
@@ -212,5 +212,9 @@ if __name__ == "__main__":
     )
 
     wav_bytes_list = pipeline.run(scenario)
+
+    with open(r"llm_video_generation\src\v.pkl", "wb") as f:
+        import pickle
+        pickle.dump(wav_bytes_list, f)
 
     print(f"{len(wav_bytes_list)}個の音声データを取得しました")

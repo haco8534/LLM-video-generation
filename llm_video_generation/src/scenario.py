@@ -56,7 +56,11 @@ _SYSTEM_PROMPT_TOPICS = """
 _SYSTEM_PROMPT_SCENARIO = """
     あなたは対話型台本を作るプロフェッショナルです。
     台本全体を構成する一つのトピックの対話パートを作成します。
-    以下のルールに従って、「キャラクター2人の対話形式」で分かりやすく構成された台本を生成してください。
+
+    # 前提
+    ユーザーからは、台本全体の構成要約（他トピックも含む全体の流れ）と、
+    現在注力すべきトピックのタイトルおよびポイントが与えられます。
+    全体の流れを踏まえたうえで、現在のトピックの内容だけを丁寧に会話化してください。
 
     # キャラクター設定
     ## 四国めたん（解説役）
@@ -77,7 +81,22 @@ _SYSTEM_PROMPT_SCENARIO = """
     3. **1発話60文字以内**、**総文字数500文字±5%**。
     4. **1ポイントにつき最低2往復以上**。
     5. 難解表現は避け、例え・比喩を織り交ぜる。
+    6. 与えられた現在のトピックにのみ焦点を当てること。他の話題に脱線しない。
+    7. 会話の自然さとテンポの良さを重視する。
+
+    # 入力形式（ユーザーから与えられる情報）
+    【台本全体の構成（要約）】
+    1. <タイトル1> – 要点1 / 要点2 / ...
+    2. <タイトル2> – 要点1 / 要点2 / ...
+    ...
+
+    【現在のトピック】<現在のタイトル>
+    【ポイント】
+    - 要点1
+    - 要点2
+    ...
 """
+
 
 _SYSTEM_PROMPT_STRUCT = r"""
     あなたは動画制作パイプラインの「構造化エンジン」です。
@@ -160,15 +179,28 @@ class ScenarioTopicGenerator:
 # ────────────────────────────────────────────────────────────────────────────────
 
 class ScenarioGenerator:
-    """タイトル+ポイント → 対話台本（プレーンテキスト）"""
+    """タイトル+ポイント(+全体概要) → 対話台本（プレーンテキスト）"""
 
-    def __init__(self, client: OpenAI, *, model: str = "gpt-4o"):
+    def __init__(self, client: OpenAI, *, model: str = "gpt-4.1"):
         self._client = client
         self._model = model
 
-    def generate(self, title: str, points: List[str]) -> str:
+    def generate(
+        self,
+        title: str,
+        points: List[str],
+        outline: List[Dict[str, List[str]]],   # ★ 追加
+    ) -> str:
+        # 台本全体の概要を 1 行ずつ整形
+        outline_str = "\n".join(
+            f"{idx+1}. {t['title']} – {' / '.join(t['points'])}"
+            for idx, t in enumerate(outline)
+        )
+
         user_prompt = (
-            f"【タイトル】{title}\n"
+            "【台本全体の構成（要約）】\n"
+            f"{outline_str}\n\n"
+            f"【現在のトピック】{title}\n"
             "【ポイント】\n" + "\n".join(f"- {p}" for p in points)
         )
 
@@ -268,8 +300,16 @@ class ScenarioService:
     def run(self, theme: str, minutes: int) -> Dict:
         print("📝 Generating topic list …")
         topic_dict = self._topic_gen.generate(theme, minutes)
+
         intro = topic_dict["introduction"]
         concl = topic_dict["conclusion"]
+
+        # 台本全体の概要 (= intro + topics + concl) を 1 つのリストにまとめる ★
+        outline_all = (
+            [{"title": intro["title"], "points": intro["points"]}]
+            + topic_dict["topics"]
+            + [{"title": concl["title"], "points": concl["points"]}]
+        )
 
         all_segments: List[Dict] = []
         id_counter = itertools.count(1)
@@ -277,20 +317,21 @@ class ScenarioService:
         for idx, t in enumerate(self._iter_topics(topic_dict), 1):
             print(f"🎬 Topic {idx}: {t['title']}")
             conv_points = self._pre.convert(t["points"])
-            script = self._dialogue_gen.generate(t["title"], conv_points)
+            # ★ 追加パラメータ outline_all を渡す
+            script = self._dialogue_gen.generate(t["title"], conv_points, outline_all)
             segments = self._structurer.to_segments(script)
             for seg in segments:
                 seg["id"] = next(id_counter)
             all_segments.extend(segments)
 
-        # 🔽 改行処理をここで行う（生成の一部と見なす）
         all_segments = self._postprocess_segments(all_segments, max_len=35)
 
         return {
             "introduction": intro,
             "segments": all_segments,
             "conclusion": concl,
-    }
+        }
+
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Quick CLI test (will run only if this file is executed directly)

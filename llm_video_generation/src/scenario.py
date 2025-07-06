@@ -12,7 +12,7 @@ from openai import OpenAI
 _SYSTEM_PROMPT_TOPICS = """
     あなたは受賞歴のある脚本家です。
     ユーザーから提示された「テーマ」に対して、
-    その内容をエンタメ解説動画に仕立てるための**トピック（小見出し）**を複数提案し、各トピックで語るべき要点をユーモラスに箇条書きしてください。
+    その内容をゆっくり解説動画に仕立てるための**トピック（小見出し）**を複数提案し、各トピックで語るべき要点を箇条書きしてください。
 
     # 出力形式（JSON）
 
@@ -43,14 +43,12 @@ _SYSTEM_PROMPT_TOPICS = """
     }}
 
     # 制約・ルール
-    1. **introduction** では本題に入る前のワクワクするフックを置く。突飛な比喩やワンライナー歓迎。
+    1. **introduction** では本題に入る前のワクワクするフックを置く。
     2. **conclusion** では視聴後の余韻と次への好奇心を残すように。
-    3. **トピック数** は `{min_subtopics}` 個を目安とする。
-    4. 各トピックは幅広い一般論を避け、**具体例・最新トレンド・意外な裏話**を交える。
-    5. **硬い表現NG**。キャッチーで取っつきやすい言い回しに。
-    6. 広すぎる抽象語で終わらず、**ピンポイントな視点・事例**を必ず含める。
-    7. 「初心者にも分かるが深掘りできる」レベル感を意識する。
-    8. 出力は **整形済みJSONオブジェクトのみ**。前後に余計な文字やコードブロック記号を付けない。
+    3. **トピック数** は `{min_subtopics}` 個とする。
+    4. 各トピックは幅広い一般論を避け、**具体例**を交える。
+    5. 「初学者にも分かるが上級者が見ても面白い」レベル感を意識する。
+    6. 出力は **整形済みJSONオブジェクトのみ**。前後に余計な文字やコードブロック記号を付けない。
 """
 
 _SYSTEM_PROMPT_SCENARIO = """
@@ -78,11 +76,10 @@ _SYSTEM_PROMPT_SCENARIO = """
     # 出力ルール
     1. **台本はプレーンテキストのみ**。
     2. 各台詞は「キャラ名：本文」の形式。
-    3. **1発話60文字以内**、**総文字数500文字±5%**。
+    3. **1発話70文字以内**、**総文字数500文字±5%**。
     4. **1ポイントにつき最低2往復以上**。
     5. 難解表現は避け、例え・比喩を織り交ぜる。
-    6. 与えられた現在のトピックにのみ焦点を当てること。他の話題に脱線しない。
-    7. 会話の自然さとテンポの良さを重視する。
+    6. 会話の自然さとテンポの良さを重視する。
 
     # 入力形式（ユーザーから与えられる情報）
     【台本全体の構成（要約）】
@@ -301,6 +298,8 @@ class ScenarioService:
         print("📝 Generating topic list …")
         topic_dict = self._topic_gen.generate(theme, minutes)
 
+        print(topic_dict)
+
         intro = topic_dict["introduction"]
         concl = topic_dict["conclusion"]
 
@@ -317,7 +316,6 @@ class ScenarioService:
         for idx, t in enumerate(self._iter_topics(topic_dict), 1):
             print(f"🎬 Topic {idx}: {t['title']}")
             conv_points = self._pre.convert(t["points"])
-            # ★ 追加パラメータ outline_all を渡す
             script = self._dialogue_gen.generate(t["title"], conv_points, outline_all)
             segments = self._structurer.to_segments(script)
             for seg in segments:
@@ -337,8 +335,8 @@ class ScenarioService:
 # Quick CLI test (will run only if this file is executed directly)
 # ────────────────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    THEME = "存在しない漢字を、なぜ入力できるのか？ 世にも恐ろしい技術的負債の話。"
-    MINUTES = 2
+    THEME = "【楽して学ぶ】「趣味でプログラミングをやる」というのは成立するのか？"
+    MINUTES = 4
 
     svc = ScenarioService()
     result = svc.run(THEME, MINUTES)

@@ -35,7 +35,7 @@ FONT = "C:/Windows/Fonts/meiryo.ttc"
 
 # concat で -c copy するため、すべての音声ストリーム仕様を統一
 SAMPLE_RATE   = 48_000    # Hz
-CHANNEL_LAYOUT = "stereo" # "mono" なら mono で統一
+CHANNEL_LAYOUT = "stereo"
 
 # 背景画像パス
 BG_DIALOGUE = "llm_video_generation/assets/background/3.png"

@@ -1,15 +1,15 @@
 {
   "introduction": {
-    "title": "存在しない漢字の謎に迫る！",
+    "title": "趣味でプログラミング？それは夢か現実か！",
     "points": [
-      "漢字が増えすぎて、もはや「存在しない漢字」を入力できる時代に突入！一体どうして？"
+      "プログラミングを趣味にするのは、まるでスパイダーマンがスパゲッティを作るようなもので、意外と面白いかも！"
     ]
   },
   "segments": [
     {
       "id": 1,
       "type": "topic",
-      "title": "技術的負債について"
+      "title": "コードを書くことはパズル"
     },
     {
       "id": 2,
@@ -17,7 +17,7 @@
       "script": {
         "speaker": "1",
         "face": "normal1",
-        "text": "ずんだもん、技術的負債って聞いたことあるかしら？"
+        "text": "ずんだもん、コードを書くことはパズルを解くようなものなのよ。"
       }
     },
     {
@@ -26,7 +26,7 @@
       "script": {
         "speaker": "2",
         "face": "normal2",
-        "text": "うーん、なんだか難しそうなのだ。でも、教えてほしいのだ！"
+        "text": "どうしてそうなのだ？"
       }
     },
     {
@@ -35,7 +35,7 @@
       "script": {
         "speaker": "1",
         "face": "normal3",
-        "text": "簡単に言うと、古いプログラムが新しい漢字を取り込めないの。銀行口座に借\n金が積もるのに似ているわ。"
+        "text": "それは一つ一つのコードがピースのようで、正解を見つけると心地よいのよ。"
       }
     },
     {
@@ -44,7 +44,7 @@
       "script": {
         "speaker": "2",
         "face": "normal4",
-        "text": "へぇ、プログラムにもそんなことが起こるのだ？"
+        "text": "なるほど、パズルを完成させる気持ちなのだね！"
       }
     },
     {
@@ -53,7 +53,7 @@
       "script": {
         "speaker": "1",
         "face": "normal1",
-        "text": "ええ、新しい漢字が増えても、古いシステムは対応できず、負担が増えるの。"
+        "text": "そうですわ。次に、自分だけのゲームやアプリを作る楽しさについて話しまし\nょう。"
       }
     },
     {
@@ -61,8 +61,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "worry",
-        "text": "エンジニアが「なぜこの漢字が使えるのか？」と悩むのも、そのせいなのだ？"
+        "face": "normal2",
+        "text": "マインクラフトで城を建てるような感じなのだ？"
       }
     },
     {
@@ -70,8 +70,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "surprised",
-        "text": "そう、まるで幽霊が突然現れるようなもので、誰もが驚いてしまうわね。"
+        "face": "normal3",
+        "text": "ええ、自分のアイディアが形になるのは、自分の世界を創るようなものよ。"
       }
     },
     {
@@ -79,59 +79,55 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal2",
-        "text": "不思議なのだ！じゃあ、古いフォントやデータベースはどうして新しい漢字を\n拒むのだ？"
+        "face": "normal4",
+        "text": "それってワクワクするのだ！"
       }
     },
     {
       "id": 10,
-      "type": "dialogue",
-      "script": {
-        "speaker": "1",
-        "face": "normal3",
-        "text": "それは、夢の中の漢字を現実に持ってこれないからよ。古いものは新しいもの\nを受け入れるのに時間がかかるの。"
-      }
+      "type": "topic",
+      "title": "プログラミングでのコミュニティ参加"
     },
     {
       "id": 11,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "normal4",
-        "text": "なるほど、だからユーザーは夢の中でしか見られない漢字を使うことになるの\nだね。"
+        "speaker": "1",
+        "face": "normal1",
+        "text": "最後に、プログラミングでのコミュニティ参加についてよ。"
       }
     },
     {
       "id": 12,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
-        "face": "normal1",
-        "text": "そういうことね。未来の技術で、いつか解決されるかしら。"
+        "speaker": "2",
+        "face": "normal2",
+        "text": "SNSの「いいね！」を集めるような感覚って？"
       }
     },
     {
       "id": 13,
-      "type": "topic",
-      "title": "AIと存在しない漢字"
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "ええ、同じ興味を持つ人とつながり、新しい友達ができるのですわ。"
+      }
     },
     {
       "id": 14,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
-        "face": "normal1",
-        "text": "AIが「存在しない漢字」を生成するのは、あたかも魔法使いが呪文を唱える\nようなものですわ。"
+        "speaker": "2",
+        "face": "normal4",
+        "text": "プログラミングって楽しそうなのだ！"
       }
     },
     {
       "id": 15,
-      "type": "dialogue",
-      "script": {
-        "speaker": "2",
-        "face": "normal2",
-        "text": "どうしてそんなことができるのだ？"
-      }
+      "type": "topic",
+      "title": "プログラミング学習サイトについて"
     },
     {
       "id": 16,
@@ -139,7 +135,7 @@
       "script": {
         "speaker": "1",
         "face": "normal1",
-        "text": "AIは大量のデータからパターンを学び、新しい形を生み出す力を持っている\nのですのよ。"
+        "text": "ずんだもん、プログラミング学習サイトを知ってるかしら？"
       }
     },
     {
@@ -147,8 +143,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal2",
-        "text": "なるほど、まるで魔法のようなのだ！"
+        "face": "surprised",
+        "text": "知ってるのだ！でも、なぜディズニーワールドなのだ？"
       }
     },
     {
@@ -156,8 +152,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "normal1",
-        "text": "そして、最近のAIは「未登録の漢字」も扱うことができるのですわ。"
+        "face": "normal2",
+        "text": "それはね、多様なコースがまるでアトラクションのようだからですわ。\n自分のペースで楽しめるの。"
       }
     },
     {
@@ -165,8 +161,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal2",
-        "text": "それって、どういうことなのだ？"
+        "face": "normal3",
+        "text": "なるほど！次はYouTubeの話を聞きたいのだ。"
       }
     },
     {
@@ -174,8 +170,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "normal1",
-        "text": "AIはすでに知っている知識を組み合わせ、新しい情報を適応させる能力があ\nるからですわ。"
+        "face": "normal4",
+        "text": "YouTubeのチュートリアルは、攻略本みたいなもので、見ながら学ぶだ\nけでステップアップできるからですわね。"
       }
     },
     {
@@ -183,8 +179,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal2",
-        "text": "だから「漢字の迷宮」に迷い込む鍵になるのだね！"
+        "face": "normal1",
+        "text": "確かに、動画を見ながらだとわかりやすいのだ！"
       }
     },
     {
@@ -192,8 +188,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "normal1",
-        "text": "実際にAIに「存在しない漢字」を入力させると、驚きのアウトプットが得ら\nれますわ。"
+        "face": "normal2",
+        "text": "そして、オープンソースプロジェクトはどう思うかしら？"
       }
     },
     {
@@ -202,7 +198,7 @@
       "script": {
         "speaker": "2",
         "face": "surprised",
-        "text": "どんな結果が出たのだ？"
+        "text": "サバイバルゲームと一緒なのだ？"
       }
     },
     {
@@ -210,8 +206,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "normal1",
-        "text": "試してみたところ、なんとアート作品のような美しい形が生まれたのですわよ\n。"
+        "face": "normal3",
+        "text": "そうですわ。実際のプロジェクトに参加することで、スキルを磨く冒険のよう\nですのよ。"
       }
     },
     {
@@ -219,24 +215,205 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "surprised",
-        "text": "えー、まるでアート！？それは見てみたいのだ！"
+        "face": "normal4",
+        "text": "実践的な経験が積めるのは魅力的なのだ！楽しく学べそう！"
       }
     },
     {
       "id": 26,
+      "type": "topic",
+      "title": "プログラミングの楽しさと落とし穴"
+    },
+    {
+      "id": 27,
       "type": "dialogue",
       "script": {
         "speaker": "1",
         "face": "normal1",
-        "text": "未来の言語モデルがどんな新しい世界を見せてくれるのか、楽しみですわね。"
+        "text": "ずんだもん、趣味でプログラミングするのは楽しいけれど、落とし穴もあるの\nですわ。"
+      }
+    },
+    {
+      "id": 28,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "具体的にどんなことがあるのだ？"
+      }
+    },
+    {
+      "id": 29,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "「楽しくやる」と「楽してやる」は違うわ。まるでボス戦みたいに手ごわい時\nもあるのよ。"
+      }
+    },
+    {
+      "id": 30,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "なるほど、つまり、楽してクリアはできないのだ？"
+      }
+    },
+    {
+      "id": 31,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "そうね。努力と工夫が必要なのよ。次に挫折しそうな時だけれど…"
+      }
+    },
+    {
+      "id": 32,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "アニメの主人公みたいに頑張ればいいのだ？"
+      }
+    },
+    {
+      "id": 33,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "ええ、その通り。成長する過程を乗り越えると、達成感が得られるわ。"
+      }
+    },
+    {
+      "id": 34,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "worry",
+        "text": "でも、没頭しすぎたら現実がNPCに見えるって？"
+      }
+    },
+    {
+      "id": 35,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal4",
+        "text": "そうなの。時間を忘れてしまうと、現実感が薄れることもあるのですわ。"
+      }
+    },
+    {
+      "id": 36,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal1",
+        "text": "バランスが大事なのだな！楽しいだけじゃダメなのかぁ。"
+      }
+    },
+    {
+      "id": 37,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal2",
+        "text": "ええ、挑戦と忍耐の組み合わせが大切よ。楽しみながらも気をつけてね。"
+      }
+    },
+    {
+      "id": 38,
+      "type": "topic",
+      "title": "趣味とフリーランスの関係"
+    },
+    {
+      "id": 39,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "ずんだもん、趣味がフリーランスや副業に繋がるのは、アニメのキャラが異世\n界転生するようなものですのよ。"
+      }
+    },
+    {
+      "id": 40,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "どうして異世界転生みたいなのだ？"
+      }
+    },
+    {
+      "id": 41,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "趣味として楽しんでいたものが、気づけば新しい環境で活かされている。\nまるで別の世界に飛び込んだような感覚ですわ。"
+      }
+    },
+    {
+      "id": 42,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "なるほどなのだ！じゃあ、プログラミングスキルがスーパーヒーローの能力っ\nてどういうことなのだ？"
+      }
+    },
+    {
+      "id": 43,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "プログラミングは今や多くの業界で求められていますから、まるで多くの場面\nで役立つスーパーヒーローの力のようですの。"
+      }
+    },
+    {
+      "id": 44,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "確かに、それならどこでも活躍できるのだ！でも成功した事例を聞くと自分も\nできる気がするって、どういうことなのだ？"
+      }
+    },
+    {
+      "id": 45,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal2",
+        "text": "成功者の話は、自分の努力が報われる可能性を感じさせてくれますわ。\nまるで映画のラストシーンで希望が見えるようなものですわね。"
+      }
+    },
+    {
+      "id": 46,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal3",
+        "text": "それを聞くと、ボクもやる気が出てくるのだ！すごいのだ！"
+      }
+    },
+    {
+      "id": 47,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal4",
+        "text": "その気持ちを大切に、ずんだもんも素敵な冒険を始めるのですわね。"
       }
     }
   ],
   "conclusion": {
-    "title": "未来の漢字、未来の私たち",
+    "title": "プログラミングは趣味でも成り立つ！",
     "points": [
-      "存在しない漢字の背後に潜む技術的負債を知ることで、私たちの言語がどれだけ進化しているかを改めて考えさせられる！"
+      "趣味としてのプログラミングは、可能性に満ちた冒険。次はどんなコードを組んで、どんな世界を創り出す？"
     ]
   }
 }

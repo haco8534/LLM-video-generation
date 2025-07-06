@@ -206,7 +206,7 @@ def _build_topic_graph(title: str, design: str = "1"):
     bg = _mk_background(s["bg"], TOPIC_DUR)
 
     # 文字サイズ計算
-    max_fs, min_fs, step, base_len = 75, 55, 10, 11
+    max_fs, min_fs, step, base_len = 75, 50, 10, 11
     dec = max(0, ((len(title) - base_len) // 1) * step)
     fontsize = max(min_fs, max_fs - dec)
 

@@ -1,14 +1,23 @@
-# インストール手順
+# 必要アプリケーション（事前にインストール）
+- FFmpeg（動画編集）
+- VoiceVox（音声合成）
 
-# 前提アプリケーション
-ffmpeg(動画編集)
-VoiceVox(Text To Speech)
+## 必要なAPIキー
+- OpenAI API key
+- Pixabay API key
 
-## 1. 仮想環境作成
+ルートディレクトリに .env ファイルを作成し、以下のように記述してください：
+
+OPENAI_API_KEY=your_openai_api_key
+PIXABAY_API_KEY=your_pixabay_api_key
+
+# セットアップ手順（Windows）
+
+## 1. 仮想環境の作成
 python -m venv venv
 
-## 2. 環境アクティベート
+## 2. 仮想環境のアクティベート
 venv\Scripts\activate
 
-## 3. ライブラリインストール
+## 3. ライブラリのインストール
 pip install -r requirements.txt

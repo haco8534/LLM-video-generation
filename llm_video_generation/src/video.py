@@ -50,6 +50,31 @@ BG_TOPIC    = "llm_video_generation/assets/background/2.png"
 CHAR_ROOT = "llm_video_generation/assets/character"
 
 # ──────────────────────────────
+# 場面転換スタイルプリセット
+# ──────────────────────────────
+
+TOPIC_STYLES: dict[str, dict] = {
+    "1": {
+        "bg": "llm_video_generation/assets/background/2.png",
+        "rect_outer": "#7281E3@0.80",
+        "rect_inner": "#9DA7EB",
+        "text_color": "orange",
+        "char": f"{CHAR_ROOT}/ずんだもん/think.png",
+        "char_scale": 700,
+        "char_pos": (780, 50),
+    },
+    "2": {
+        "bg": "llm_video_generation/assets/background/4.png",
+        "rect_outer": "#8D006E@0.80",
+        "rect_inner": "#EC9CDB",
+        "text_color": "#63C8FF",
+        "char": f"{CHAR_ROOT}/四国めたん/whisper.png",
+        "char_scale": 650,
+        "char_pos": (800, 100),
+    },
+}
+
+# ──────────────────────────────
 # 低レイヤ helper
 # ──────────────────────────────
 
@@ -174,83 +199,58 @@ def _build_dialogue_graph(
     )
     return bg, audio
 
+def _build_topic_graph(title: str, design: str = "1"):
+    s = TOPIC_STYLES.get(design, TOPIC_STYLES["1"]) 
 
-def _build_topic_graph(title: str):
     rect_w, rect_h = 950, 570
-    bg = _mk_background(BG_TOPIC, TOPIC_DUR)
+    bg = _mk_background(s["bg"], TOPIC_DUR)
 
-    # 動的フォントサイズ（2文字ごとに10下げる）
-    max_fontsize = 75
-    min_fontsize = 55
-    step = 1
-    step_size = 10
-    base_length = 11
+    # 文字サイズ計算
+    max_fs, min_fs, step, base_len = 75, 55, 10, 11
+    dec = max(0, ((len(title) - base_len) // 1) * step)
+    fontsize = max(min_fs, max_fs - dec)
 
-    length = len(title)
-    decrement = ((length - base_length) // step) * step_size
-    fontsize = max(min_fontsize, max_fontsize - decrement)
-
-    # --- 背景・矩形・下線 -----------------------
+    # ----- 矩形 3 枚 -----
     bg = bg.drawbox(
-        x=f"(iw-{rect_w})/2 - 80",
-        y=f"(ih-{rect_h})/2 + 20",
-        width=rect_w,
-        height=rect_h,
-        color="#9DA7EB",
-        thickness="fill",
-    )
-    bg = bg.drawbox(
-        x=f"(iw-{rect_w})/2 - 100",
-        y=f"(ih-{rect_h})/2",
-        width=rect_w,
-        height=rect_h,
-        color="#7281E3@0.8",
-        thickness="fill",
-    )
-    bg = bg.drawbox(
-        x=f"(iw-{rect_w})/2 - 80",
-        y=f"(ih-{rect_h})/2 + 340",
-        width=rect_w - 35,
-        height=3,
-        color="white",
-        thickness="fill",
+        x=f"(iw-{rect_w})/2 - 80",  y=f"(ih-{rect_h})/2 + 20",
+        width=rect_w, height=rect_h, color=s["rect_inner"], thickness="fill",
+    ).drawbox(
+        x=f"(iw-{rect_w})/2 - 100", y=f"(ih-{rect_h})/2",
+        width=rect_w, height=rect_h, color=s["rect_outer"], thickness="fill",
+    ).drawbox(
+        x=f"(iw-{rect_w})/2 - 80",  y=f"(ih-{rect_h})/2 + 340",
+        width=rect_w - 35, height=3, color="white", thickness="fill",
     )
 
-    # --- タイトルテキスト -----------------
+    # ----- タイトル -----
     bg = bg.drawtext(
-        text=title,
-        fontfile="C:/Windows/Fonts/meiryob.ttc",
-        fontsize=fontsize,
-        fontcolor="orange",
-        x="(w-text_w)/2 - 100",
-        y="(h-text_h)/2",
-        borderw=4,
-        bordercolor="white",
-        shadowcolor="black",
-        shadowx=2,
-        shadowy=2,
+        text=title, fontfile="C:/Windows/Fonts/meiryob.ttc",
+        fontsize=fontsize, fontcolor=s["text_color"],
+        x="(w-text_w)/2 - 100", y="(h-text_h)/2",
+        borderw=4, bordercolor="white",
+        shadowcolor="black", shadowx=2, shadowy=2,
     )
 
-    # --- キャラクター ----------------------
+    # ----- キャラクター -----
     char = (
-        ffmpeg.input(f"{CHAR_ROOT}/ずんだもん/think.png", loop=1, t=TOPIC_DUR, framerate=FPS)
-        .filter("scale", 700, -1)
+        ffmpeg.input(s["char"], loop=1, t=TOPIC_DUR, framerate=FPS)
+        .filter("scale", s["char_scale"], -1)
     )
-    bg = ffmpeg.overlay(bg, char, x=780, y=50)
+    cx, cy = s["char_pos"]
+    bg = ffmpeg.overlay(bg, char, x=cx, y=cy)
 
-    # --- 効果音（SE） --------------------------
+    # ----- 効果音 -----
     audio = (
-        ffmpeg
-        .input(SE_TOPIC_PATH)
-        .filter("apad", pad_dur=TOPIC_DUR)           # 足りない分を無音でパディング
-        .filter("atrim", duration=TOPIC_DUR)         # 3 秒に切り揃え
+        ffmpeg.input(SE_TOPIC_PATH)
+        .filter("apad", pad_dur=TOPIC_DUR)
+        .filter("atrim", duration=TOPIC_DUR)
         .filter("aresample", SAMPLE_RATE)
         .filter("aformat", channel_layouts=CHANNEL_LAYOUT)
         .filter("volume", SE_VOLUME)
     )
 
-
     return bg, audio
+
 
 # ──────────────────────────────
 # 画像キャッシュ helper
@@ -347,7 +347,8 @@ class VideoAssembler:
             # topic --------------------------------------------------
             if seg["type"] == "topic":
                 current_topic = seg.get("title", "")
-                v, a = _build_topic_graph(current_topic)
+                design_no = seg.get("design", "1") 
+                v, a = _build_topic_graph(current_topic, design_no)
             # dialogue ----------------------------------------------
             elif seg["type"] == "dialogue":
                 sc = seg["script"]

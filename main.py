@@ -1,6 +1,5 @@
 def main():
-    from llm_video_generation.src import scenario, image, voice, video
-
+    from llm_video_generation.src import scenario, image, voice, video, format
     '''
     ss = scenario.ScenarioService()
     script = ss.run("国語の授業って必要？？本読めばよくない？？", minutes=1)
@@ -9,7 +8,12 @@ def main():
 
     with open(r"llm_video_generation\src\s.txt", "r", encoding="utf-8") as f:
         import json
-        script = json.load(f)
+        data = json.load(f)
+    
+    with open('./llm_video_generation/src/s.txt', 'w', encoding='utf-8') as f:
+        script = format.add_design_to_topics(data)
+        json.dump(script, f, ensure_ascii=False, indent=2)
+
     '''
     char_style = {"1": "四国めたん/ノーマル", "2": "ずんだもん/ノーマル"}
     tts_params = {"speedScale": 1.1, "intonationScale": 1.1}

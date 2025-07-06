@@ -31,6 +31,11 @@ FPS = 30
 DIALOGUE_DUR = 1      # dialogue セグメント長 (秒)
 TOPIC_DUR    = 3      # topic   セグメント長 (秒)
 
+BGM_PATH    = "llm_video_generation/assets/bgm/Voice.mp3"
+BGM_VOLUME  = 0.1
+SE_TOPIC_PATH = "llm_video_generation/assets/SE/3.mp3"
+SE_VOLUME     = 0.6
+
 FONT = "C:/Windows/Fonts/meiryo.ttc"
 
 # concat で -c copy するため、すべての音声ストリーム仕様を統一
@@ -233,12 +238,17 @@ def _build_topic_graph(title: str):
     )
     bg = ffmpeg.overlay(bg, char, x=780, y=50)
 
-    # --- 無音音声 --------------------------
-    audio = ffmpeg.input(
-        f"anullsrc=channel_layout={CHANNEL_LAYOUT}:sample_rate={SAMPLE_RATE}",
-        format="lavfi",
-        t=TOPIC_DUR,
+    # --- 効果音（SE） --------------------------
+    audio = (
+        ffmpeg
+        .input(SE_TOPIC_PATH)
+        .filter("apad", pad_dur=TOPIC_DUR)           # 足りない分を無音でパディング
+        .filter("atrim", duration=TOPIC_DUR)         # 3 秒に切り揃え
+        .filter("aresample", SAMPLE_RATE)
+        .filter("aformat", channel_layouts=CHANNEL_LAYOUT)
+        .filter("volume", SE_VOLUME)
     )
+
 
     return bg, audio
 
@@ -278,6 +288,46 @@ class VideoAssembler:
         path = self.temp_dir / f"voice_{idx:03}.wav"
         path.write_bytes(data)
         return path
+    
+    # --------------------------------------------------------
+    def _add_bgm(self, src: Path, dst: str | Path):
+        """
+        src の映像ストリームはコピーし、
+        src の音声 + ループさせた BGM を amix で重ねて dst に保存
+        """
+        v_in  = ffmpeg.input(str(src))
+        bgm_delay_ms = 2900
+
+        bgm_in = (
+            ffmpeg
+            .input(BGM_PATH, stream_loop=-1)
+            .filter("aresample", SAMPLE_RATE)
+            .filter("aformat", channel_layouts=CHANNEL_LAYOUT)
+            .filter("volume", BGM_VOLUME)
+            .filter("adelay", f"{bgm_delay_ms}|{bgm_delay_ms}")  # L/R 両チャンネルに適用
+        )
+
+        mixed = ffmpeg.filter(
+            [v_in.audio, bgm_in],
+            "amix",
+            inputs=2,
+            duration="first",           # 映像の長さに合わせて BGM を切る
+            dropout_transition=3,
+        )
+
+        (
+            ffmpeg
+            .output(
+                v_in.video, mixed, str(dst),
+                vcodec="copy",          # 映像はコピー
+                acodec="aac",
+                movflags="faststart",
+                loglevel="error",
+            )
+            .overwrite_output()
+            .run()
+        )
+
 
     # --------------------------------------------------------
     def build_segments(
@@ -355,7 +405,12 @@ class VideoAssembler:
         """シナリオ + 音声 + 画像 URL から output_path に MP4 を生成"""
         local_images = _cache_images(image_urls, self.temp_dir)
 
-        # ② セグメント動画生成 → ③ 連結
+        # ② セグメント生成 → ③ 連結
         segs = self.build_segments(scenario, audio_bytes, local_images)
-        self.concat(segs, output_path)
+
+        concat_path = self.temp_dir / "concat.mp4"
+        self.concat(segs, concat_path)
+
+        # ④ BGM を重ねて最終出力
+        self._add_bgm(concat_path, output_path)
         return Path(output_path)

@@ -65,7 +65,7 @@ TOPIC_STYLES: dict[str, dict] = {
     },
     "2": {
         "bg": "llm_video_generation/assets/background/4.png",
-        "rect_outer": "#8D006E@0.80",
+        "rect_outer": "#FD00CA@0.80",
         "rect_inner": "#EC9CDB",
         "text_color": "#63C8FF",
         "char": f"{CHAR_ROOT}/四国めたん/whisper.png",

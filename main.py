@@ -1,5 +1,10 @@
+from llm_video_generation.src import scenario, format
+from llm_video_generation.src.main import image, main_voice, main_video
+
 def main():
-    from llm_video_generation.src import scenario, image, voice, video, format
+    
+    THEME = "【楽して学ぶ】「趣味でプログラミングをやる」というのは成立するのか？"
+    
     '''
     ss = scenario.ScenarioService()
     script = ss.run("国語の授業って必要？？本読めばよくない？？", minutes=1)
@@ -30,7 +35,7 @@ def main():
         import pickle
         urls = pickle.load(f)
 
-    assembler = video.VideoAssembler()
+    assembler = main_video.VideoAssembler()
     mp4 = assembler.build_full_video(script, audio_bytes, urls, "output.mp4")
     print(f"✅ 完成: {mp4.resolve()}")
 

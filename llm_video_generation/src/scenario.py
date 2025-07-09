@@ -52,6 +52,34 @@ _SYSTEM_PROMPT_TOPICS = """
     6. 出力は **整形済みJSONオブジェクトのみ**。前後に余計な文字やコードブロック記号を付けない。
 """
 
+_SYSTEM_PROMPT_INTRO = """
+    あなたは台本を作るプロフェッショナルです。
+    台本のイントロダクショントピックのパートを作成します。
+    
+    # 前提
+    ユーザーからは、台本全体の構成要約（他トピックも含む全体の流れ）と、
+    現在注力すべきトピックのタイトルおよびポイントが与えられます。
+    全体の流れを踏まえたうえで、解説動画におけるイントロダクションの台本を作成してください。
+
+    # 出力ルール
+    1. **台本はプレーンテキストのみ**。
+    2. 各台詞は1フレーズごとに改行する。
+    3. **1発話70文字以内**、**総文字数300文字±5%**。
+    4. メインパートへの自然な導入を意識する
+
+    # 入力形式（ユーザーから与えられる情報）
+    【台本全体の構成（要約）】
+    1. <タイトル1> – 要点1 / 要点2 / ...
+    2. <タイトル2> – 要点1 / 要点2 / ...
+    ...
+
+    【現在のトピック】<現在のタイトル>
+    【ポイント】
+    - 要点1
+    - 要点2
+    ...
+"""
+
 _SYSTEM_PROMPT_SCENARIO = """
     あなたは対話型台本を作るプロフェッショナルです。
     台本全体を構成する一つのトピックの対話パートを作成します。
@@ -77,7 +105,7 @@ _SYSTEM_PROMPT_SCENARIO = """
     # 出力ルール
     1. **台本はプレーンテキストのみ**。
     2. 各台詞は「キャラ名：本文」の形式。
-    3. **1発話70文字以内**、**総文字数500文字±5%**。
+    3. **1発話70文字以内**、**総文字数600文字±5%**。
     4. **1ポイントにつき最低2往復以上**。
     5. 与えられた現在のトピックにのみ焦点を当てること。他の話題に脱線しない。
     6. 会話の自然さを重視する。
@@ -95,6 +123,23 @@ _SYSTEM_PROMPT_SCENARIO = """
     ...
 """
 
+_SYSTEM_PROMPT_STRUCT_INTRO = r"""
+    あなたは動画制作パイプラインの「構造化エンジン」です。
+    入力された台本を、下記 JSON スキーマに従って厳密に変換してください。
+
+    {
+        "introduction": {
+            "text": [
+                <string>,
+                <string>
+            ]
+        },
+    }
+
+    # 変換ルール
+    * textには時系列順にテキストを1フレーズごとに挿入
+    * 前後に余計な文字列・コードブロック記号は禁止。
+"""
 
 _SYSTEM_PROMPT_STRUCT = r"""
     あなたは動画制作パイプラインの「構造化エンジン」です。
@@ -119,10 +164,13 @@ _SYSTEM_PROMPT_STRUCT = r"""
     * 前後に余計な文字列・コードブロック記号は禁止。
 """
 
-# ────────────────────────────────────────────────────────────────────────────────
-# ❶ Pre-processor : abstract → conversational questions
-# ────────────────────────────────────────────────────────────────────────────────
-
+# ───────────────────────────────────────────────────────────────
+# 📝 ScenarioPreprocessor
+#    - 台本ポイント（箇条書き）を “問い” 形式に変換するヘルパ
+#    - 動画中のダイアログが単調な説明にならないよう、
+#      指標単語 → 疑問文 へのヒューリスティックを適用
+#    - *副作用なし*・純粋関数的に points → new_points を返す
+# ───────────────────────────────────────────────────────────────
 class ScenarioPreprocessor:
     clue_words = (
         "なぜ", "どうして", "どうやって", "本当", "マジ", "意味", "原因", "理由",
@@ -144,10 +192,12 @@ class ScenarioPreprocessor:
                 out.append(f"なんで{p}の？")
         return out
 
-# ────────────────────────────────────────────────────────────────────────────────
-# ❷ テーマから、小見出しとそれぞれの要点をに出力
-# ────────────────────────────────────────────────────────────────────────────────
-
+# ───────────────────────────────────────────────────────────────
+# 🏗️ ScenarioTopicGenerator
+#    - テーマ文字列を GPT へ投げ、解説動画の全体構成案(JSON)を生成
+#    - 引数 minutes を “最低トピック数” としてプロンプトに組み込む
+#    - 戻り値: introduction / topics / conclusion を含む dict
+# ───────────────────────────────────────────────────────────────
 class ScenarioTopicGenerator:
     """テーマ → トピック + 要点（JSON）"""
 
@@ -172,10 +222,13 @@ class ScenarioTopicGenerator:
         )
         return json.loads(resp.choices[0].message.content)
 
-# ────────────────────────────────────────────────────────────────────────────────
-# ❸ Dialogue generator – points are pre-processed before use
-# ────────────────────────────────────────────────────────────────────────────────
 
+# ───────────────────────────────────────────────────────────────
+# 🎤 ScenarioGenerator
+#    - 1トピック分の *対話台本* を生成
+#    - outline 全体を与えることで “前後の流れ” を踏まえた応答を誘導
+#    - points は ScenarioPreprocessor で質問化済みのリストを想定
+# ───────────────────────────────────────────────────────────────
 class ScenarioGenerator:
     """タイトル+ポイント(+全体概要) → 対話台本（プレーンテキスト）"""
 
@@ -214,10 +267,52 @@ class ScenarioGenerator:
         )
         return resp.choices[0].message.content.strip()
 
-# ────────────────────────────────────────────────────────────────────────────────
-# ❹ Structurer (unchanged logic)
-# ────────────────────────────────────────────────────────────────────────────────
+# ───────────────────────────────────────────────────────────────
+# 🎬 IntroductionGenerator
+#    - イントロダクション専用の台本を生成（短尺・ナレーション形式）
+# ───────────────────────────────────────────────────────────────
+class IntroductionGenerator:
+    """イントロダクションタイトル+ポイント(+全体概要) → イントロ台本（テキスト）"""
 
+    def __init__(self, client: OpenAI, *, model: str = "gpt-4o"):
+        self._client = client
+        self._model = model
+
+    def generate(
+        self,
+        title: str,
+        points: List[str],
+        outline: List[Dict[str, List[str]]],
+    ) -> str:
+        outline_str = "\n".join(
+            f"{idx+1}. {t['title']} – {' / '.join(t['points'])}"
+            for idx, t in enumerate(outline)
+        )
+        user_prompt = (
+            "【台本全体の構成（要約）】\n"
+            f"{outline_str}\n\n"
+            f"【現在のトピック】{title}\n"
+            "【ポイント】\n" + "\n".join(f"- {p}" for p in points)
+        )
+
+        resp = self._client.chat.completions.create(
+            model=self._model,
+            temperature=0.8,
+            top_p=0.95,
+            presence_penalty=0.2,
+            messages=[
+                {"role": "system", "content": _SYSTEM_PROMPT_INTRO},
+                {"role": "user", "content": user_prompt},
+            ],
+        )
+        return resp.choices[0].message.content.strip()
+
+# ───────────────────────────────────────────────────────────────
+# 🗂️ ScenarioStructurer / ScenarioIntroStructurer
+#    - LLM 出力テキスト → JSON へのパース専用クラス
+#    - *LLM に JSON を吐かせる* アプローチなので実装は薄いが、
+#      プロンプト変更時の影響範囲が集中するハブ
+# ───────────────────────────────────────────────────────────────
 class ScenarioStructurer:
     """台本文字列 → JSON 構造化（segments）"""
 
@@ -238,13 +333,40 @@ class ScenarioStructurer:
         )
         data = json.loads(resp.choices[0].message.content)
         return data["segments"]
+    
 
-# ────────────────────────────────────────────────────────────────────────────────
-# ❺ Facade – rewired to (a) preprocess points and (b) skip intro/conclusion
-# ────────────────────────────────────────────────────────────────────────────────
+class ScenarioIntroStructurer:
+    """イントロ台本文字列 → JSON 構造化（introduction.text[]）"""
 
+    def __init__(self, client: OpenAI, *, model: str = "gpt-4o-mini"):
+        self._client = client
+        self._model = model
+
+    def to_intro(self, script: str) -> Dict:
+        resp = self._client.chat.completions.create(
+            model=self._model,
+            temperature=0.5,
+            top_p=0.9,
+            presence_penalty=0.2,
+            messages=[
+                {"role": "system", "content": _SYSTEM_PROMPT_STRUCT_INTRO},
+                {"role": "user", "content": script},
+            ],
+        )
+        # 生成物は {"introduction": { "text": [...] }}
+        return json.loads(resp.choices[0].message.content)["introduction"]
+
+# ───────────────────────────────────────────────────────────────
+# 🚀 ScenarioService
+#    - 外部 API として “theme → 最終 JSON” を一気通貫で提供する Facade
+#    - 主な流れ
+#        1. トピック一覧生成
+#        2. イントロ生成 → 構造化
+#        3. 各サブトピックをループ処理（質問化 → 台本生成 → 構造化）
+#        4. 後処理で台詞を自動折り返し
+# ───────────────────────────────────────────────────────────────
 class ScenarioService:
-    """High-level orchestration: theme → structured segments."""
+    """High-level orchestration: theme → structured segments（+ intro）"""
 
     def __init__(
         self,
@@ -256,18 +378,22 @@ class ScenarioService:
     ) -> None:
         load_dotenv()
         self._client = OpenAI(api_key=openai_api_key or os.getenv("OPENAI_API_KEY"))
-        self._topic_gen = ScenarioTopicGenerator(self._client, model=model_topic)
+        self._topic_gen   = ScenarioTopicGenerator(self._client, model=model_topic)
+        self._intro_gen   = IntroductionGenerator(self._client, model=model_dialogue)
         self._dialogue_gen = ScenarioGenerator(self._client, model=model_dialogue)
-        self._structurer = ScenarioStructurer(self._client, model=model_struct)
+        self._intro_struct = ScenarioIntroStructurer(self._client, model=model_struct)
+        self._structurer   = ScenarioStructurer(self._client, model=model_struct)
         self._pre = ScenarioPreprocessor()
 
-    # ────────────────────────────────────────────────────────────────────
+    # ------------------------------------------------------------------
     def _iter_topics(self, topic_json: Dict) -> List[Dict]:
-        """Yield only real sub-topics; intro/conclusion kept aside."""
-        return [{"title": t["title"], "points": t["points"]} for t in topic_json["topics"]]
+        """introduction / conclusion を除いた純粋なトピック部分だけを返す"""
+        return [{"title": t["title"], "points": t["points"]}
+                for t in topic_json["topics"]]
 
-    def _postprocess_segments(self, segments: List[Dict], *, max_len: int = 35) -> List[Dict]:
-        """dialogueセグメントの台本に対して、文字数制限に応じた改行を挿入"""
+    def _postprocess_segments(self, segments: List[Dict],
+                              *, max_len: int = 35) -> List[Dict]:
+        """35 字以上の台詞を読点・句点を優先して強制改行するユーティリティ"""
         def wrap_text(text: str) -> str:
             BREAK_CHARS = "、。.,!?！？…「」『』"
             lines, buf = [], ""
@@ -294,23 +420,27 @@ class ScenarioService:
                     seg["script"]["text"] = wrap_text(txt)
         return segments
 
-    # ────────────────────────────────────────────────────────────────────
+    # ------------------------------------------------------------------
     def run(self, theme: str, minutes: int) -> Dict:
         print("📝 Generating topic list …")
         topic_dict = self._topic_gen.generate(theme, minutes)
 
-        print(topic_dict)
+        intro_meta = topic_dict["introduction"]  # {'title', 'points'}
+        concl_meta = topic_dict["conclusion"]
 
-        intro = topic_dict["introduction"]
-        concl = topic_dict["conclusion"]
-
-        # 台本全体の概要 (= intro + topics + concl) を 1 つのリストにまとめる ★
+        # 全体の流れを組む
         outline_all = (
-            [{"title": intro["title"], "points": intro["points"]}]
-            + topic_dict["topics"]
-            + [{"title": concl["title"], "points": concl["points"]}]
+            [intro_meta] + topic_dict["topics"] + [concl_meta]
         )
 
+        # ★ 1) イントロ台本生成 → 構造化
+        print("🎬 Generating introduction script …")
+        intro_script = self._intro_gen.generate(
+            intro_meta["title"], intro_meta["points"], outline_all
+        )
+        intro_struct = self._intro_struct.to_intro(intro_script)  # {"text":[...]}
+
+        # ★ 2) 各サブトピックを従来通り処理
         all_segments: List[Dict] = []
         id_counter = itertools.count(1)
 
@@ -325,15 +455,16 @@ class ScenarioService:
 
         all_segments = self._postprocess_segments(all_segments, max_len=35)
 
+        # ★ 3) 最終 JSON
         return {
-            "introduction": intro,
+            "introduction": intro_struct,
             "segments": all_segments,
-            "conclusion": concl,
+            "conclusion": concl_meta,   
         }
 
 
 # ────────────────────────────────────────────────────────────────────────────────
-# Quick CLI test (will run only if this file is executed directly)
+# 動作テスト
 # ────────────────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     THEME = "【楽して学ぶ】「趣味でプログラミングをやる」というのは成立するのか？"

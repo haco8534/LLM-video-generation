@@ -1,5 +1,5 @@
 from llm_video_generation.src import scenario, format
-from llm_video_generation.src.main import image, main_voice, main_video
+from llm_video_generation.src.main import image, main_tts, main_video
 
 def main():
     

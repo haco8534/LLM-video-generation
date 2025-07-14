@@ -11,3 +11,5 @@ def _mk_background(path: str, dur: int):
     )
 
 
+if __name__ == '__main__':
+    

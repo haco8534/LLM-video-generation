@@ -1,66 +1,203 @@
+"""
+intro_video_builder.py  – タイトル中央表示版
+────────────────────────────────────────────────────────────
+- audio_bytes は TTS から渡される bytes[] （タイトル＋本文）
+- タイトル行は中央に大きく表示（フェードイン）
+- 本文行は従来どおり下部字幕
+"""
+
+from __future__ import annotations
+import subprocess, tempfile
+from itertools import accumulate
+from pathlib import Path
+from typing import List
 import ffmpeg
 
-W, H = 1280, 720
+# -------------- 画面設定 -----------------
+W, H          = 1280, 720
+FPS           = 30
+FONT_PATH     = "C:/Windows/Fonts/meiryo.ttc"
+BASE_FONT_SIZE = 100
+SUB_FONT_SIZE  = 45
+BG_COLOR      = "black@0.4"
+BG_PATH       = r"llm_video_generation/assets/background/8.png"
 
-def add_popin_text(base, text: str):
+FADE_DURATION = 1        # タイトルのフェード秒
+SUB_Y         = H - 140
+BOX_H         = 200
 
-    # ------- パラメータ -------
-    FONT        = "C:/Windows/Fonts/meiryo.ttc"
-    BASE_SIZE   = 100
-    SCALE_MIN   = 0.3
-    SCALE_MAX   = 1.2
-    SCALE_END   = 1.0
-    T_PEAK      = 0.3
-    T_END       = 0.7
+SAMPLE_RATE    = 48_000
+CHANNEL_LAYOUT = "stereo"
+# ----------------------------------------
 
-    fontsize_expr = f'''
-    if(
-        lt(t,{T_PEAK}),
-        {BASE_SIZE}*({SCALE_MIN} + ({SCALE_MAX}-{SCALE_MIN})*(t/{T_PEAK})),
-        if(
-            lt(t,{T_END}),
-            {BASE_SIZE}*({SCALE_END} + ({SCALE_MAX}-{SCALE_END}) * (1 - (t-{T_PEAK})/({T_END}-{T_PEAK})) * cos(3.1415*(t-{T_PEAK})/({T_END}-{T_PEAK}))),
-            {BASE_SIZE}
-        )
+# ────────────────────────────
+# 台本ヘルパ
+# ────────────────────────────
+def _extract_intro_texts(sce: dict) -> List[str]:
+    intro = sce.get("introduction", {})
+    title = intro.get("title", "")
+    lines = intro.get("text", [])
+    return [title, *lines] if title else list(lines)
+
+
+# ────────────────────────────
+# ffmpeg ヘルパ
+# ────────────────────────────
+def _write_wavs(tmp: Path, audios: List[bytes]) -> List[Path]:
+    paths = []
+    for i, b in enumerate(audios):
+        p = tmp / f"voice_{i:03}.wav"
+        p.write_bytes(b); paths.append(p)
+    return paths
+
+
+def _probe_durations(wavs: List[Path]) -> List[float]:
+    return [float(ffmpeg.probe(str(w))["format"]["duration"]) for w in wavs]
+
+
+def _concat_audio(wavs: List[Path], dst: Path):
+    lst = dst.with_suffix(".txt")
+    lst.write_text("".join(f"file '{w.resolve()}'\n" for w in wavs), encoding="utf-8")
+    subprocess.run(
+        ["ffmpeg","-y","-f","concat","-safe","0","-i",str(lst),"-c","copy",str(dst)],
+        check=True
     )
-    '''.replace('\n', '')
 
-    # ------- drawtext 合成 -------
-    return base.filter(
-        'drawtext',
-        text=text,
-        fontfile=FONT,
-        fontsize=fontsize_expr,
-        fontcolor='white',
-        x='(w-text_w)/2',
-        y='(h-text_h)/2',
-        borderw=6, bordercolor='black',
-        shadowx=2, shadowy=2, shadowcolor='black@0.5'
-    )
 
-if __name__ == '__main__':
-    # 黒背景 3 秒の映像に「Hello Pop!」を表示
-    path = r"llm_video_generation\assets\background\7.png"
-    rect_w, rect_h = 950, 570
-    bg = (ffmpeg
-            .input(path, loop=1, t=2, framerate=30)
-            .filter("scale", W, H)
-            .filter("setsar", "1") 
-        )
-    bg = bg.drawbox(
-        x="(iw-w)/2",
-        y=str(H - 180),
-        width=W,
-        height=200,
-        color="black@0.6",
-        thickness="fill",
-    )
-    pop = add_popin_text(bg, 'サンプルテキスト')
-
-    # 出力
-    (
+# ────────────────────────────
+# 背景 + 字幕 / タイトル合成
+# ────────────────────────────
+def _build_video_bg(
+    duration: float,
+    title: str, t_start: float, t_end: float,
+    lines: List[str], starts: List[float], ends: List[float],
+):
+    v = (
         ffmpeg
-        .output(pop, 'pop_out.mp4', r=30, vcodec='libx264', pix_fmt='yuv420p')
-        .overwrite_output()
-        .run()
+        .input(BG_PATH, loop=1, t=duration, framerate=FPS)
+        .filter("scale", W, H)
+        .filter("setsar", "1")
+        .drawbox(x="(iw-w)/2", y=str(H-BOX_H), width=W, height=BOX_H,
+                color=BG_COLOR, thickness="fill")
     )
+
+    # --- タイトル中央表示 ---
+    fade_expr = f"if(lt(t,{t_start+FADE_DURATION}), (t-{t_start})/{FADE_DURATION}, 1)"
+    v = v.drawtext(
+        text=title,
+        fontfile=FONT_PATH,
+        fontsize=str(BASE_FONT_SIZE),
+        fontcolor="white",
+        alpha=fade_expr,
+        x="(w-text_w)/2",
+        y="(h-text_h)/2 - 100",
+        borderw=6, bordercolor="black",
+        shadowx=2, shadowy=2, shadowcolor="black@0.5",
+        enable=f"gte(t,{t_start:.3f})",
+    )
+
+    # --- 本文字幕（タイトル以外） ---
+    for txt, st, ed in zip(lines, starts, ends):
+        v = v.drawtext(
+            text=txt,
+            fontfile=FONT_PATH,
+            fontsize=SUB_FONT_SIZE,
+            fontcolor="white",
+            x="(w-text_w)/2",
+            y=str(SUB_Y),
+            borderw=2, bordercolor="black",
+            shadowx=2, shadowy=2, shadowcolor="black",
+            line_spacing=8,
+            enable=f"between(t,{st:.3f},{ed:.3f})",
+        )
+    return v
+
+
+# ────────────────────────────
+# パブリック API
+# ────────────────────────────
+def build_intro_video(scenario: dict, audio_bytes: List[bytes],
+                        output_path: str | Path = "intro.mp4"):
+    texts = _extract_intro_texts(scenario)
+    if len(texts) != len(audio_bytes):
+        raise ValueError("台本行数と音声数が一致しません")
+
+    tmp = Path(tempfile.mkdtemp())
+    wavs = _write_wavs(tmp, audio_bytes)
+
+    durs      = _probe_durations(wavs)
+    cum       = list(accumulate(durs))
+    starts    = [0.0, *cum[:-1]]   # 各行開始秒
+    ends      = cum                # 各行終了秒
+    total_sec = cum[-1]
+
+    # ---- タイトルを分離 ----
+    title, lines          = texts[0], texts[1:]
+    t_start, t_end        = starts[0], ends[0]
+    sub_starts, sub_ends  = starts[1:], ends[1:]
+    wav_lines             = wavs      # 音声は全部まとめるので分離不要
+
+    # ---- 音声一本化 ----
+    full_wav = tmp / "full.wav"
+    _concat_audio(wav_lines, full_wav)
+
+    # ---- 映像ストリーム ----
+    v = _build_video_bg(
+        total_sec, title, t_start, t_end,
+        lines, sub_starts, sub_ends
+    )
+
+    # ---- 音声ストリーム ----
+    a = (
+        ffmpeg
+        .input(str(full_wav))
+        .filter("aresample", SAMPLE_RATE)
+        .filter("aformat", channel_layouts=CHANNEL_LAYOUT)
+    )
+
+    # ---- 出力 ----
+    (ffmpeg
+        .output(v, a, str(output_path),
+                vcodec="libx264", acodec="aac",
+                r=FPS, pix_fmt="yuv420p", movflags="faststart",
+                loglevel="error")
+        .overwrite_output()
+        .run())
+    print(f"[OK] intro saved → {output_path}")
+
+
+# ────────────────────────────
+# CLI テスト（VoiceVox が起動している前提）
+# ────────────────────────────
+if __name__ == "__main__":
+    import json
+    from intro_tts import IntroductionTTSPipeline
+
+    scenario_json = r'''{ "introduction": { "title": "生物と炭素の関係",
+        "text":[ "生物が炭素を必要とする理由を考えたことはありますか？",
+        "炭素は、地球上のすべての生物にとって不可欠な要素です。",
+        "それは単なる化学物質ではなく、生命の基盤を形成しています。",
+        "なぜ炭素は、他の元素では代替できないのでしょうか？",
+        "その秘密を解き明かすことで、生物の進化の謎に迫ります。",
+        "驚くほど多様な生物たちが、炭素をどのように利用しているのか。",
+        "炭素がなければ、生物はどのような形を成していたのでしょう？",
+        "次に、その答えを見つけに行きましょう。" ] } }'''
+    sce = json.loads(scenario_json)
+
+    # ① 音声を生成
+    # ---- 設定 ----
+    char_style = {
+        "1": "もち子さん/ノーマル",
+    }
+    tts_params = {"speedScale": 1.1, "intonationScale": 1.1}
+
+    pipeline = IntroductionTTSPipeline(
+        char_style=char_style,
+        tts_params=tts_params,
+        processes=3,
+    )
+
+    voices = pipeline.run(sce, speaker="1")
+
+    # ② 動画を生成
+    build_intro_video(sce, voices, "intro.mp4")

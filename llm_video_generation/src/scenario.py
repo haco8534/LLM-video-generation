@@ -65,7 +65,7 @@ _SYSTEM_PROMPT_INTRO = """
     # 出力ルール
     1. **台本はプレーンテキストのみ**。
     2. 各台詞は1フレーズごとに改行する。
-    3. **1発話70文字以内**、**総文字数300文字±5%**。
+    3. **1発話60文字以内**、**文章数は6～8文**。
     4. メインパートへの自然な導入を意識する
     5. 挨拶などは入れず、すぐにイントロダクションの本題に入る
     6. テーマ的に可能であれば、読者に対して引きや新たな視点を与えるような問いかけを作る
@@ -398,33 +398,41 @@ class ScenarioService:
         return [{"title": t["title"], "points": t["points"]}
                 for t in topic_json["topics"]]
 
+    """35 字以上の台詞を読点・句点を優先して強制改行するユーティリティ"""
+    def _wrap_text(self, text: str, *, max_len: int = 35) -> str:
+        BREAK_CHARS = "、。.,!?！？…「」『』"
+        lines, buf = [], ""
+        for ch in text:
+            buf += ch
+            if len(buf) >= max_len:
+                # 直近 5 文字以内に句読点があればそこを優先
+                split_pos = next(
+                    (len(buf) - i + 1
+                    for i in range(1, min(5, len(buf)) + 1)
+                    if buf[-i] in BREAK_CHARS),
+                    max_len
+                )
+                lines.append(buf[:split_pos].rstrip())
+                buf = buf[split_pos:]
+        if buf:
+            lines.append(buf)
+        return "\n".join(lines)
+
+    def _postprocess_intro(self, intro: Dict,
+                           *, max_len: int = 35) -> Dict:
+        intro["text"] = [
+            self._wrap_text(t, max_len=max_len) for t in intro["text"]
+        ]
+        return intro
+
     def _postprocess_segments(self, segments: List[Dict],
                               *, max_len: int = 35) -> List[Dict]:
-        """35 字以上の台詞を読点・句点を優先して強制改行するユーティリティ"""
-        def wrap_text(text: str) -> str:
-            BREAK_CHARS = "、。.,!?！？…「」『』"
-            lines, buf = [], ""
-            for ch in text:
-                buf += ch
-                if len(buf) >= max_len:
-                    split_pos = None
-                    for i in range(1, min(5, len(buf)) + 1):
-                        if buf[-i] in BREAK_CHARS:
-                            split_pos = len(buf) - i + 1
-                            break
-                    if split_pos is None:
-                        split_pos = max_len
-                    lines.append(buf[:split_pos].rstrip())
-                    buf = buf[split_pos:]
-            if buf:
-                lines.append(buf)
-            return "\n".join(lines)
 
         for seg in segments:
             if seg.get("type") == "dialogue":
                 txt = seg["script"]["text"]
                 if len(txt) > max_len:
-                    seg["script"]["text"] = wrap_text(txt)
+                    seg["script"]["text"] = self._wrap_text(txt, max_len=max_len)
         return segments
 
     # ------------------------------------------------------------------
@@ -446,6 +454,7 @@ class ScenarioService:
             intro_meta["title"], intro_meta["points"], outline_all
         )
         intro_struct = self._intro_struct.to_intro(intro_script)  # {"text":[...]}
+        intro_struct = self._postprocess_intro(intro_struct, max_len=30)
 
         # ★ 2) 各サブトピックを従来通り処理
         all_segments: List[Dict] = []

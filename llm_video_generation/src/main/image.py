@@ -85,7 +85,7 @@ class KeywordGenerator:
             reply = self._chat(user_prompt)
             try:
                 reply = self._chat(user_prompt)
-                print("[DEBUG] GPT raw reply:\n", reply[:300])
+                # print("[DEBUG] GPT raw reply:\n", reply[:300])
                 keywords = json.loads(reply)
             except json.JSONDecodeError:
                 continue

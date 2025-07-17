@@ -1,16 +1,12 @@
 """
-intro_video_builder.py  – タイトル中央表示版
+intro_video_builder.py
 ────────────────────────────────────────────────────────────
-- audio_bytes は TTS から渡される bytes[] （タイトル＋本文）
-- タイトル行は中央に大きく表示（フェードイン）
-- 本文行は従来どおり下部字幕
 """
-
 from __future__ import annotations
 import subprocess, tempfile
 from itertools import accumulate
 from pathlib import Path
-from typing import List
+from typing import List, Sequence, Optional
 import ffmpeg
 
 # -------------- 画面設定 -----------------
@@ -18,7 +14,7 @@ W, H          = 1280, 720
 FPS           = 30
 FONT_PATH     = "C:/Windows/Fonts/meiryo.ttc"
 BASE_FONT_SIZE = 100
-SUB_FONT_SIZE  = 45
+SUB_FONT_SIZE  = 40
 BG_COLOR      = "black@0.4"
 BG_PATH       = r"llm_video_generation/assets/background/8.png"
 
@@ -26,9 +22,14 @@ FADE_DURATION = 1        # タイトルのフェード秒
 SUB_Y         = H - 140
 BOX_H         = 200
 
+# -------------- 音声設定 -----------------
 SAMPLE_RATE    = 48_000
 CHANNEL_LAYOUT = "stereo"
+
+DEFAULT_BGM_VOLUME = 0.1
+DEFAULT_SE_VOLUME  = 0.6     
 # ----------------------------------------
+
 
 # ────────────────────────────
 # 台本ヘルパ
@@ -41,9 +42,9 @@ def _extract_intro_texts(sce: dict) -> List[str]:
 
 
 # ────────────────────────────
-# ffmpeg ヘルパ
+# WAV 出力 & probe
 # ────────────────────────────
-def _write_wavs(tmp: Path, audios: List[bytes]) -> List[Path]:
+def _write_wavs(tmp: Path, audios: Sequence[bytes]) -> List[Path]:
     paths = []
     for i, b in enumerate(audios):
         p = tmp / f"voice_{i:03}.wav"
@@ -51,11 +52,11 @@ def _write_wavs(tmp: Path, audios: List[bytes]) -> List[Path]:
     return paths
 
 
-def _probe_durations(wavs: List[Path]) -> List[float]:
+def _probe_durations(wavs: Sequence[Path]) -> List[float]:
     return [float(ffmpeg.probe(str(w))["format"]["duration"]) for w in wavs]
 
 
-def _concat_audio(wavs: List[Path], dst: Path):
+def _concat_audio(wavs: Sequence[Path], dst: Path):
     lst = dst.with_suffix(".txt")
     lst.write_text("".join(f"file '{w.resolve()}'\n" for w in wavs), encoding="utf-8")
     subprocess.run(
@@ -69,7 +70,7 @@ def _concat_audio(wavs: List[Path], dst: Path):
 # ────────────────────────────
 def _build_video_bg(
     duration: float,
-    title: str, t_start: float, t_end: float,
+    title: str, t_start: float,
     lines: List[str], starts: List[float], ends: List[float],
 ):
     v = (
@@ -81,7 +82,7 @@ def _build_video_bg(
                 color=BG_COLOR, thickness="fill")
     )
 
-    # --- タイトル中央表示 ---
+    # タイトル中央表示（フェード後ずっと表示）
     fade_expr = f"if(lt(t,{t_start+FADE_DURATION}), (t-{t_start})/{FADE_DURATION}, 1)"
     v = v.drawtext(
         text=title,
@@ -96,7 +97,7 @@ def _build_video_bg(
         enable=f"gte(t,{t_start:.3f})",
     )
 
-    # --- 本文字幕（タイトル以外） ---
+    # 本文字幕
     for txt, st, ed in zip(lines, starts, ends):
         v = v.drawtext(
             text=txt,
@@ -114,52 +115,129 @@ def _build_video_bg(
 
 
 # ────────────────────────────
+# オーディオ合成
+# ────────────────────────────
+def _build_audio_mix(
+    tts_wav: Path,
+    total_sec: float,
+    starts: List[float],
+    bgm_path: Optional[str|Path],
+    se_paths: Optional[Sequence[Optional[str|Path]]],
+    bgm_vol: float,
+    se_vol: float,
+):
+    """tts_wav + (bgm) + (SEs) -> mixed audio stream"""
+    streams = []
+
+    # ① TTS (メイン)
+    tts = ffmpeg.input(str(tts_wav))
+    streams.append(tts)
+
+    # ② BGM ループ
+    if bgm_path:
+        bgm = (
+            ffmpeg
+            .input(str(bgm_path), stream_loop=-1)
+            .filter("atrim", duration=total_sec)
+            .filter("asetpts", "N/SR/TB")
+            .filter("volume", bgm_vol)
+        )
+        streams.append(bgm)
+
+    # ③ SE（タイトル＋各セリフ）
+    if se_paths:
+        if len(se_paths) != len(starts):
+            raise ValueError("se_paths の要素数は台本行数と同じにしてください")
+        for se_path, st in zip(se_paths, starts):
+            if se_path is None:
+                continue
+            delay_ms = int(st * 1000)
+            se = (
+                ffmpeg
+                .input(str(se_path))
+                .filter("adelay", f"{delay_ms}|{delay_ms}")
+                .filter("volume", se_vol)
+            )
+            streams.append(se)
+
+    # ④ mix
+    if len(streams) == 1:
+        return streams[0]       # BGM/SE 無し
+    return ffmpeg.filter(streams, "amix",
+                        inputs=len(streams),
+                        dropout_transition=0,
+                        normalize=0)
+
+
+# ────────────────────────────
 # パブリック API
 # ────────────────────────────
-def build_intro_video(scenario: dict, audio_bytes: List[bytes],
-                        output_path: str | Path = "intro.mp4"):
+def build_intro_video(
+    scenario: dict,
+    audio_bytes: List[bytes],
+    output_path: str | Path = "intro.mp4",
+    *,
+    bgm_path: str | Path | None = None,
+    se_paths: Sequence[Optional[str | Path]] | None = None,
+    bgm_volume: float = DEFAULT_BGM_VOLUME,
+    se_volume: float = DEFAULT_SE_VOLUME,
+):
+    
+    # ▼ ❶ ここで JSON 中の "sound" からパスを拾う ──────────
+    sound_cfg = scenario.get("sound", {})
+    if bgm_path is None:
+        bgm_path = sound_cfg.get("intro_bgm")
+
+    if se_paths is None:
+        se_path_title = sound_cfg.get("intro_se")
+        # タイトルだけ鳴らし、それ以外は None
+        if se_path_title:
+            se_paths = [se_path_title] + [None] * len(scenario.get("introduction", {}).get("text", []))
+        else:
+            se_paths = None
+    # ────────────────────────────────────────────────
+
+    # --- 台本 / 尺 ---
     texts = _extract_intro_texts(scenario)
     if len(texts) != len(audio_bytes):
         raise ValueError("台本行数と音声数が一致しません")
 
     tmp = Path(tempfile.mkdtemp())
-    wavs = _write_wavs(tmp, audio_bytes)
+    wavs = _write_wavs(tmp, audio_bytes)       # 各行 WAV
 
-    durs      = _probe_durations(wavs)
-    cum       = list(accumulate(durs))
-    starts    = [0.0, *cum[:-1]]   # 各行開始秒
-    ends      = cum                # 各行終了秒
-    total_sec = cum[-1]
+    durs   = _probe_durations(wavs)
+    cum    = list(accumulate(durs))
+    starts = [0.0, *cum[:-1]]
+    ends   = cum
+    total  = cum[-1]
 
-    # ---- タイトルを分離 ----
-    title, lines          = texts[0], texts[1:]
-    t_start, t_end        = starts[0], ends[0]
-    sub_starts, sub_ends  = starts[1:], ends[1:]
-    wav_lines             = wavs      # 音声は全部まとめるので分離不要
+    # タイトル / 本文 分離
+    title, lines      = texts[0], texts[1:]
+    sub_starts, sub_ends = starts[1:], ends[1:]
 
-    # ---- 音声一本化 ----
-    full_wav = tmp / "full.wav"
-    _concat_audio(wav_lines, full_wav)
+    # --- TTS 一本化 ---
+    full_wav = tmp / "tts_full.wav"
+    _concat_audio(wavs, full_wav)
 
-    # ---- 映像ストリーム ----
-    v = _build_video_bg(
-        total_sec, title, t_start, t_end,
-        lines, sub_starts, sub_ends
+    # --- 映像ストリーム ---
+    v_stream = _build_video_bg(
+        total, title, starts[0], lines, sub_starts, sub_ends
     )
 
-    # ---- 音声ストリーム ----
-    a = (
-        ffmpeg
-        .input(str(full_wav))
-        .filter("aresample", SAMPLE_RATE)
-        .filter("aformat", channel_layouts=CHANNEL_LAYOUT)
-    )
+    # --- 音声ストリーム (TTS + BGM + SE) ---
+    a_stream = _build_audio_mix(
+        full_wav, total, starts,
+        bgm_path, se_paths,
+        bgm_volume, se_volume,
+    ).filter("aresample", SAMPLE_RATE)\
+    .filter("aformat", channel_layouts=CHANNEL_LAYOUT)
 
-    # ---- 出力 ----
+    # --- 出力 ---
     (ffmpeg
-        .output(v, a, str(output_path),
+        .output(v_stream, a_stream, str(output_path),
                 vcodec="libx264", acodec="aac",
-                r=FPS, pix_fmt="yuv420p", movflags="faststart",
+                r=FPS, pix_fmt="yuv420p",
+                movflags="faststart",
                 loglevel="error")
         .overwrite_output()
         .run())
@@ -167,42 +245,24 @@ def build_intro_video(scenario: dict, audio_bytes: List[bytes],
 
 
 # ────────────────────────────
-# CLI テスト（VoiceVox が起動している前提）
+# CLI テスト例
 # ────────────────────────────
 if __name__ == "__main__":
     import json
     from intro_tts import IntroductionTTSPipeline
 
-    scenario_json = r'''{
-    "introduction": {
-        "title": "炭素の生物的重要性",
-        "text": [
-        "炭素は、なぜすべての生物に欠かせないのでしょうか。",
-        "宇宙にはたくさんの元素がありますが、",
-        "生物にとって特に重要な位置を占めるのが炭素です。",
-        "その理由を探ることは、生命の神秘を解き明かす鍵となります。",
-        "炭素はどのようにして私たちを形作り、",
-        "生物の多様性に貢献しているのでしょうか。",
-        "この動画では、その秘密に迫ってみましょう。",
-        "炭素の化学的特性について、次に詳しくお話しします。"
-        ]
-    }}'''
-    sce = json.loads(scenario_json)
+    # ▶ JSON ファイルからシナリオ読み込み
+    with open("llm_video_generation/src/s.txt", "r", encoding="utf-8") as f:
+        scenario = json.load(f)
 
-    # ① 音声を生成
-    # ---- 設定 ----
-    char_style = {
-        "1": "もち子さん/ノーマル",
-    }
-    tts_params = {"speedScale": 1.1, "intonationScale": 1.1}
-
+    # ▶ 音声を生成（title + text）
     pipeline = IntroductionTTSPipeline(
-        char_style=char_style,
-        tts_params=tts_params,
+        char_style={"1": "もち子さん/ノーマル"},
+        tts_params={"speedScale": 1.05},
         processes=3,
     )
+    voices = pipeline.run(scenario, speaker="1")
 
-    voices = pipeline.run(sce, speaker="1")
+    # ▶ 動画を生成（BGM/SE は JSON 中の sound に従う）
+    build_intro_video(scenario, voices, output_path="intro.mp4")
 
-    # ② 動画を生成
-    build_intro_video(sce, voices, "intro.mp4")

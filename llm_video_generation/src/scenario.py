@@ -46,6 +46,7 @@ _SYSTEM_PROMPT_TOPICS = """
     - **introduction** では本題に入る前のワクワクするフックを置く。
     - **conclusion** では視聴後の余韻と次への好奇心を残すように。
     - タイトルは15文字以内。
+    - 要点は文字数の制限は考えず可能な限り細かく具体的に記述をする。
     - **トピック数** は `{min_subtopics}` 個とする。
     - 各トピックは幅広い一般論を避け、**具体例**を交える。
     - 各トピックはテーマから外れた内容にしない。
@@ -483,11 +484,23 @@ class ScenarioService:
 # 動作テスト
 # ────────────────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
+
+    import format
+
     THEME = "【雑学】生物に必ず炭素が含まれている理由"
     MINUTES = 2
 
-    svc = ScenarioService()
-    result = svc.run(THEME, MINUTES)
+    ssv = ScenarioService()
+    result = ssv.run(THEME, MINUTES)
+
+    result = format.insert_sound_info(
+        result,
+        intro_bgm="llm_video_generation/assets/bgm/Mineral.mp3",
+        intro_se="llm_video_generation/assets/se/5.mp3",
+        body_bgm="llm_video_generation/assets/bgm/Voice.mp3",
+        body_se="llm_video_generation/assets/se/3.mp3"
+    )
+
     with open('./llm_video_generation/src/s.txt', 'w', encoding='utf-8') as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
     print(json.dumps(result, ensure_ascii=False, indent=2))

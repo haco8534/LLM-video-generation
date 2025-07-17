@@ -92,29 +92,28 @@ def _build_video_bg(duration: float,
     for st, ed, fc in zip(starts, ends, faces):
         face_intervals.setdefault(fc, []).append((st, ed))
 
+    # ▼ 追加：最初の登場時刻を求める ▼
+    first_global = min(st for ivals in face_intervals.values() for (st, _) in ivals)
+
     for fc, ivals in face_intervals.items():
-        # 同じ PNG を scale したストリームは 1 つだけ作る
         char_path = CHAR_DIR / f"{fc}.png"
-        ch = (
-            ffmpeg.input(str(char_path))
-                .filter("scale", -1, 650)
+        ch = ffmpeg.input(str(char_path)).filter("scale", -1, 650)
+
+        # 各表情が出ている区間だけ有効化
+        enable_expr = " + ".join(
+            [f"between(t,{st:.3f},{ed:.3f})" for st, ed in ivals]
         )
 
-        # ───── ① 各セリフの再生区間 ─────
-        first_st = ivals[0][0]                 # このキャラが初めて出る時刻
-        enable_expr = f"gte(t,{first_st:.3f})"
-
-        # ───── ② スライドインの X 座標式 ─────
+        # ▼ x 座標は first_global を基準に１回だけスライド ▼
         x_expr = (
-            f"if(lte(t,{first_st:.3f}),"                                    # まだ登場前
+            f"if(lte(t,{first_global:.3f}),"
             f"{CHAR_BASE_X + CHAR_SLIDE_OFFSET},"
-            f"if(lt(t,{first_st + SLIDE_DURATION:.3f}),"                    # スライド中
-            f"{CHAR_BASE_X + CHAR_SLIDE_OFFSET} - "
-            f"{CHAR_SLIDE_OFFSET}*(t-{first_st:.3f})/{SLIDE_DURATION},"
-            f"{CHAR_BASE_X}))"                                              # スライド後
+            f"if(lt(t,{first_global + SLIDE_DURATION:.3f}),"
+            f"{CHAR_BASE_X + CHAR_SLIDE_OFFSET}"
+            f" - {CHAR_SLIDE_OFFSET}*(t-{first_global:.3f})/{SLIDE_DURATION},"
+            f"{CHAR_BASE_X}))"
         )
 
-        # ───── ③ overlay ─────
         v = ffmpeg.overlay(
             v, ch,
             x=x_expr,

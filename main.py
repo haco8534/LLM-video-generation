@@ -29,8 +29,9 @@ def generate_script(theme: str, minutes: int) -> dict:
     scenario_service = scenario.ScenarioService()
     raw_script = scenario_service.run(theme, minutes)
     styled_script = format.add_design_to_topics(raw_script)
+    faced_script = format.add_random_face(styled_script)
     final_script = format.insert_sound_info(
-        styled_script,
+        faced_script,
         intro_bgm=INTRO_BGM_PATH,
         intro_se=INTRO_SE_PATH,
         body_bgm=BODY_BGM_PATH,

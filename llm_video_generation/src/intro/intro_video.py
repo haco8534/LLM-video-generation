@@ -17,10 +17,15 @@ BASE_FONT_SIZE = 100
 SUB_FONT_SIZE  = 40
 BG_COLOR      = "black@0.4"
 BG_PATH       = r"llm_video_generation/assets/background/8.png"
+CHAR_DIR = Path("llm_video_generation/assets/character/冥鳴ひまり") 
 
 FADE_DURATION = 1        # タイトルのフェード秒
 SUB_Y         = H - 140
 BOX_H         = 200
+
+CHAR_BASE_X      = 1000   # もともと指定していた位置
+CHAR_SLIDE_OFFSET = 300   # 右 (+X) にどれだけ余分に置いておくか
+SLIDE_DURATION    = 0.8   # スライドにかける秒数
 
 # -------------- 音声設定 -----------------
 SAMPLE_RATE    = 48_000
@@ -34,11 +39,14 @@ DEFAULT_SE_VOLUME  = 0.6
 # ────────────────────────────
 # 台本ヘルパ
 # ────────────────────────────
-def _extract_intro_texts(sce: dict) -> List[str]:
+def _extract_intro_lines(sce: dict):
+    """タイトル / 本文 / 顔 ID をまとめて取得"""
     intro = sce.get("introduction", {})
     title = intro.get("title", "")
-    lines = intro.get("text", [])
-    return [title, *lines] if title else list(lines)
+    lines_info = intro.get("text", [])
+    lines  = [li["script"] for li in lines_info]
+    faces  = [int(li.get("face", 1)) for li in lines_info]   # face 無し → 1
+    return title, lines, faces
 
 
 # ────────────────────────────
@@ -68,21 +76,53 @@ def _concat_audio(wavs: Sequence[Path], dst: Path):
 # ────────────────────────────
 # 背景 + 字幕 / タイトル合成
 # ────────────────────────────
-def _build_video_bg(
-    duration: float,
-    title: str, t_start: float,
-    lines: List[str], starts: List[float], ends: List[float],
-):
-    v = (
-        ffmpeg
+def _build_video_bg(duration: float,
+                    title: str, t_start: float,
+                    lines: List[str], starts: List[float], ends: List[float],
+                    faces: List[int]):
+    v = (ffmpeg
         .input(BG_PATH, loop=1, t=duration, framerate=FPS)
         .filter("scale", W, H)
         .filter("setsar", "1")
         .drawbox(x="(iw-w)/2", y=str(H-BOX_H), width=W, height=BOX_H,
-                color=BG_COLOR, thickness="fill")
-    )
+                color=BG_COLOR, thickness="fill"))
 
-    # タイトル中央表示（フェード後ずっと表示）
+    # ─ 立ち絵 ─  face 番号ごとに 1 回だけ overlay
+    face_intervals: dict[int, list[tuple[float, float]]] = {}
+    for st, ed, fc in zip(starts, ends, faces):
+        face_intervals.setdefault(fc, []).append((st, ed))
+
+    for fc, ivals in face_intervals.items():
+        # 同じ PNG を scale したストリームは 1 つだけ作る
+        char_path = CHAR_DIR / f"{fc}.png"
+        ch = (
+            ffmpeg.input(str(char_path))
+                .filter("scale", -1, 650)
+        )
+
+        # ───── ① 各セリフの再生区間 ─────
+        first_st = ivals[0][0]                 # このキャラが初めて出る時刻
+        enable_expr = f"gte(t,{first_st:.3f})"
+
+        # ───── ② スライドインの X 座標式 ─────
+        x_expr = (
+            f"if(lte(t,{first_st:.3f}),"                                    # まだ登場前
+            f"{CHAR_BASE_X + CHAR_SLIDE_OFFSET},"
+            f"if(lt(t,{first_st + SLIDE_DURATION:.3f}),"                    # スライド中
+            f"{CHAR_BASE_X + CHAR_SLIDE_OFFSET} - "
+            f"{CHAR_SLIDE_OFFSET}*(t-{first_st:.3f})/{SLIDE_DURATION},"
+            f"{CHAR_BASE_X}))"                                              # スライド後
+        )
+
+        # ───── ③ overlay ─────
+        v = ffmpeg.overlay(
+            v, ch,
+            x=x_expr,
+            y=f"{H-BOX_H-400}",
+            enable=enable_expr,
+        )
+
+    # ─ タイトル（フェード） ─
     fade_expr = f"if(lt(t,{t_start+FADE_DURATION}), (t-{t_start})/{FADE_DURATION}, 1)"
     v = v.drawtext(
         text=title,
@@ -97,7 +137,7 @@ def _build_video_bg(
         enable=f"gte(t,{t_start:.3f})",
     )
 
-    # 本文字幕
+    # ─ 字幕 ─
     for txt, st, ed in zip(lines, starts, ends):
         v = v.drawtext(
             text=txt,
@@ -112,7 +152,6 @@ def _build_video_bg(
             enable=f"between(t,{st:.3f},{ed:.3f})",
         )
     return v
-
 
 # ────────────────────────────
 # オーディオ合成
@@ -198,7 +237,8 @@ def build_intro_video(
     # ────────────────────────────────────────────────
 
     # --- 台本 / 尺 ---
-    texts = _extract_intro_texts(scenario)
+    title, lines, faces = _extract_intro_lines(scenario)
+    texts = [title, *lines]
     if len(texts) != len(audio_bytes):
         raise ValueError("台本行数と音声数が一致しません")
 
@@ -221,7 +261,9 @@ def build_intro_video(
 
     # --- 映像ストリーム ---
     v_stream = _build_video_bg(
-        total, title, starts[0], lines, sub_starts, sub_ends
+        total, title, starts[0],
+        lines, sub_starts, sub_ends,
+        faces                           # ★ 追加
     )
 
     # --- 音声ストリーム (TTS + BGM + SE) ---
@@ -241,7 +283,9 @@ def build_intro_video(
                 loglevel="error")
         .overwrite_output()
         .run())
-    print(f"[OK] intro saved → {output_path}")
+    out_path = Path(output_path).resolve()
+    print(f"[OK] intro saved → {out_path}")
+    return out_path 
 
 
 # ────────────────────────────
@@ -257,7 +301,7 @@ if __name__ == "__main__":
 
     # ▶ 音声を生成（title + text）
     pipeline = IntroductionTTSPipeline(
-        char_style={"1": "もち子さん/ノーマル"},
+        char_style={"1": "冥鳴ひまり/ノーマル"},
         tts_params={"speedScale": 1.05},
         processes=3,
     )

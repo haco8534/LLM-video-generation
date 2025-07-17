@@ -155,9 +155,18 @@ class IntroductionTTSPipeline:
 
     def _extract_intro_texts(self, scenario: dict) -> List[str]:
         intro = scenario.get("introduction", {})
+
+        # タイトル
         title = intro.get("title", "")
-        lines = intro.get("text", [])
-        return [title, *lines] if title else list(lines)
+
+        # 本文 ― script フィールドだけを取り出す
+        lines = [
+            item.get("script", "")
+            for item in intro.get("text", [])
+            if isinstance(item, dict)
+        ]
+
+        return [title, *lines] if title else lines
 
     def run(self, scenario: dict, speaker: str = "1") -> List[bytes]:
         texts = self._extract_intro_texts(scenario)

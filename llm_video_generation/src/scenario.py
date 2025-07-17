@@ -100,20 +100,18 @@ _SYSTEM_PROMPT_SCENARIO = """
     * 語尾は「〜かしら」「〜わよ」「〜ですわね」「〜ですのよ」。
     * クールで落ち着いたお嬢様口調。例え話や比喩を使うこともある。
 
-    ## ずんだもん（質問役）
+    ## ずんだもん（聞き手役）
     * 一人称は**「ボク」**。
     * 二人称は「めたん」。
     * 語尾は「〜なのだ」「〜のだ」。疑問形は「〜のだ？」のみ。
-    * 明るく元気。ボケ担当。
 
     # 出力ルール
     1. **台本はプレーンテキストのみ**。
     2. 各台詞は「キャラ名：本文」の形式。
     3. **1発話70文字以内**、**総文字数800文字±5%**。
-    4. **1ポイントにつき最低2往復以上**。
-    5. 与えられた現在のトピックにのみ焦点を当てること。他の話題に脱線しない。
-    6. 会話の自然さを重視する。
-    7. 「上級者が見て面白い」レベル感を意識する。
+    4. 与えられた現在のトピックにのみ焦点を当てること。他の話題に脱線しない。
+    5. 会話の自然さを重視する。
+    6. 「上級者向けだが初学者が見ても面白い」レベル感を意識する。
 
     # 入力形式（ユーザーから与えられる情報）
     【台本全体の構成（要約）】
@@ -136,8 +134,14 @@ _SYSTEM_PROMPT_STRUCT_INTRO = r"""
         "introduction": {
             "title": <string>,
             "text": [
-                <string>,
-                <string>
+                {
+                "id": <int>,
+                "script": <string>
+                },
+                {
+                "id": <int>,
+                "script": <string>
+                },
             ]
         },
     }
@@ -145,7 +149,7 @@ _SYSTEM_PROMPT_STRUCT_INTRO = r"""
     # 変換ルール
     * titleにはテキスト全体を要約した15文字程度の見出し
     (例)「〇〇は〇〇なのか？」「なぜ〇〇は〇〇になるのか？」などキャッチーな見出しに
-    * textには時系列順にテキストを1フレーズごとに挿入
+    * textsのscriptには時系列順にテキストを1フレーズごとに挿入
     * 前後に余計な文字列・コードブロック記号は禁止。
 """
 
@@ -419,11 +423,10 @@ class ScenarioService:
             lines.append(buf)
         return "\n".join(lines)
 
-    def _postprocess_intro(self, intro: Dict,
-                           *, max_len: int = 35) -> Dict:
-        intro["text"] = [
-            self._wrap_text(t, max_len=max_len) for t in intro["text"]
-        ]
+    def _postprocess_intro(self, intro: Dict, *, max_len: int = 35) -> Dict:
+        """text 配列の各 script を折り返すだけで構造は保持"""
+        for item in intro["text"]:
+            item["script"] = self._wrap_text(item["script"], max_len=max_len)
         return intro
 
     def _postprocess_segments(self, segments: List[Dict],
@@ -488,7 +491,7 @@ if __name__ == "__main__":
     import format
 
     THEME = "【雑学】生物に必ず炭素が含まれている理由"
-    MINUTES = 2
+    MINUTES = 4
 
     ssv = ScenarioService()
     result = ssv.run(THEME, MINUTES)

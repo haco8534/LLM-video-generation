@@ -72,6 +72,15 @@ TOPIC_STYLES: dict[str, dict] = {
         "char_scale": 650,
         "char_pos": (800, 100),
     },
+    "1": {
+        "bg": "llm_video_generation/assets/background/3.png",
+        "rect_outer": "#f58db6@0.80",
+        "rect_inner": "#3c8ce4",
+        "text_color": "orange",
+        "char": f"{CHAR_ROOT}/ずんだもん/think.png",
+        "char_scale": 700,
+        "char_pos": (780, 50),
+    },
 }
 
 # ──────────────────────────────

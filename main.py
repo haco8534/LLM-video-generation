@@ -69,7 +69,11 @@ def create_main_video(script: dict, image_urls: list):
 
 # ====== 実行エントリーポイント ======
 def main():
-    script = generate_script(THEME, VIDEO_LENGTH_MINUTES)
+    #script = generate_script(THEME, VIDEO_LENGTH_MINUTES)
+    path = r"llm_video_generation\src\s.txt"
+    with open(path, "r", encoding="utf-8") as f:
+        script = json.load(f)
+
     image_urls = collect_images(script)
     create_intro_video(script)
     create_main_video(script, image_urls)

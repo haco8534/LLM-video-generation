@@ -145,7 +145,6 @@ class PixabayFetcher:
                 "safesearch": "true",
             }
             r = requests.get(self._ENDPOINT, params=params, timeout=timeout)
-            print("[DEBUG] ping status:", r.status_code, r.text[:120])
             r.raise_for_status()
             return True
         except requests.RequestException as e:

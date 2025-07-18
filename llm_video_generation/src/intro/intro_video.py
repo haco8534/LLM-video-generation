@@ -25,7 +25,7 @@ BOX_H         = 200
 
 CHAR_BASE_X      = 1000   # もともと指定していた位置
 CHAR_SLIDE_OFFSET = 300   # 右 (+X) にどれだけ余分に置いておくか
-SLIDE_DURATION    = 0.8   # スライドにかける秒数
+SLIDE_DURATION    = 0.5   # スライドにかける秒数
 
 # -------------- 音声設定 -----------------
 SAMPLE_RATE    = 48_000
@@ -87,6 +87,21 @@ def _build_video_bg(duration: float,
         .drawbox(x="(iw-w)/2", y=str(H-BOX_H), width=W, height=BOX_H,
                 color=BG_COLOR, thickness="fill"))
 
+    # ─ タイトル（フェード） ─
+    fade_expr = f"if(lt(t,{t_start+FADE_DURATION}), (t-{t_start})/{FADE_DURATION}, 1)"
+    v = v.drawtext(
+        text=title,
+        fontfile=FONT_PATH,
+        fontsize=str(BASE_FONT_SIZE),
+        fontcolor="white",
+        alpha=fade_expr,
+        x="(w-text_w)/2",
+        y="(h-text_h)/2 - 100",
+        borderw=6, bordercolor="black",
+        shadowx=2, shadowy=2, shadowcolor="black@0.5",
+        enable=f"gte(t,{t_start:.3f})",
+    )
+
     # ─ 立ち絵 ─  face 番号ごとに 1 回だけ overlay
     face_intervals: dict[int, list[tuple[float, float]]] = {}
     for st, ed, fc in zip(starts, ends, faces):
@@ -120,21 +135,6 @@ def _build_video_bg(duration: float,
             y=f"{H-BOX_H-400}",
             enable=enable_expr,
         )
-
-    # ─ タイトル（フェード） ─
-    fade_expr = f"if(lt(t,{t_start+FADE_DURATION}), (t-{t_start})/{FADE_DURATION}, 1)"
-    v = v.drawtext(
-        text=title,
-        fontfile=FONT_PATH,
-        fontsize=str(BASE_FONT_SIZE),
-        fontcolor="white",
-        alpha=fade_expr,
-        x="(w-text_w)/2",
-        y="(h-text_h)/2 - 100",
-        borderw=6, bordercolor="black",
-        shadowx=2, shadowy=2, shadowcolor="black@0.5",
-        enable=f"gte(t,{t_start:.3f})",
-    )
 
     # ─ 字幕 ─
     for txt, st, ed in zip(lines, starts, ends):

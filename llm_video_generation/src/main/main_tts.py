@@ -28,11 +28,21 @@ from openai import OpenAI
 
 def extract_dialogues_with_speaker(scenario: dict) -> List[Tuple[str, str]]:
     """(text, speaker) を id 昇順で返す"""
-    return [
+    dialogs: List[Tuple[str, str]] = [
         (seg["script"]["text"], seg["script"]["speaker"])
         for seg in sorted(scenario["segments"], key=lambda s: s["id"])
         if seg["type"] == "dialogue"
     ]
+
+    # ── 結論パート ───────────────────────────
+    if "conclusion" in scenario and "text" in scenario["conclusion"]:
+        for item in scenario["conclusion"]["text"]:
+            if item.get("type") == "dialogue":
+                script = item["script"]
+                dialogs.append((script["text"], script["speaker"]))
+    # ────────────────────────────────────────────────
+
+    return dialogs
 
 # --------------------------------------------------------------------------- #
 # 2. ひらがな読み生成 (LLM)
@@ -45,8 +55,8 @@ class ReadGenerator:
         以下の要件に厳密に従い、与えられた日本語セリフの配列を同じ順序・要素数の配列に変換してください。
 
         1. 出力は JSON 配列（[…]）のみとし、説明文や余計な文字は一切含めない。  
-        2. 機械的な TTS で誤読が起こりそうな箇所（英字、略語、固有名詞など）はひらがなに変換する。  
-        3. 誤読リスクが低い漢字はそのまま維持する。  
+        2. 機械的な TTS で誤読が起こりそうな箇所「英字」、「略語」、をひらがなに変換する。  
+        3. 誤読リスクが低い漢字はそのまま維持する。
         4. ひらがな・カタカナ部分はそのまま維持する。  
         5. 文末の「。」は入力の有無にかかわらずすべて削除する。  
         6. 文字数やトークン数を制限せず、正確な読み仮名を最優先する。  

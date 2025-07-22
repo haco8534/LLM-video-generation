@@ -38,6 +38,19 @@ class ReadGenerator:
         4. ひらがな・カタカナ部分はそのまま維持する。
         5. 文末の「。」は入力の有無にかかわらずすべて削除する。
         6. 文字数やトークン数を制限せず、正確な読み仮名を最優先する。
+
+        ――――――  
+        【入力例】  
+        [
+        "こんにちは、今日のテーマはAIです。",
+        "次に、最適化の話をしましょう。"
+        ]
+
+        【期待する出力】
+        [
+        "こんにちは、今日のテーマはえーあいです",
+        "次に、最適化の話をしましょう"
+        ]
     '''
 
     def __init__(self, model: str = "gpt-4o-mini"):
@@ -62,9 +75,10 @@ class ReadGenerator:
         user_msg = f"要素数 {len(texts)} のリストです。同じ数で返してください。\n{payload}"
 
         for _ in range(max_retry):
-            reply = self._chat(user_msg)
+            # reply = self._chat(user_msg)
+            data = texts
             try:
-                data = json.loads(reply)
+                # data = json.loads(reply)
                 if isinstance(data, list) and len(data) == len(texts):
                     return data
             except json.JSONDecodeError:

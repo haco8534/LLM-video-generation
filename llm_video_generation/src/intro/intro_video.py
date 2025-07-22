@@ -13,7 +13,7 @@ import ffmpeg
 W, H          = 1280, 720
 FPS           = 30
 FONT_PATH     = "C:/Windows/Fonts/meiryo.ttc"
-BASE_FONT_SIZE = 100
+BASE_FONT_SIZE = 90
 SUB_FONT_SIZE  = 40
 BG_COLOR      = "black@0.4"
 BG_PATH       = r"llm_video_generation/assets/background/8.png"
@@ -32,7 +32,7 @@ SAMPLE_RATE    = 48_000
 CHANNEL_LAYOUT = "stereo"
 
 DEFAULT_BGM_VOLUME = 0.1
-DEFAULT_SE_VOLUME  = 0.6     
+DEFAULT_SE_VOLUME  = 0.6   
 # ----------------------------------------
 
 
@@ -132,7 +132,7 @@ def _build_video_bg(duration: float,
         v = ffmpeg.overlay(
             v, ch,
             x=x_expr,
-            y=f"{H-BOX_H-400}",
+            y=f"{H-BOX_H-300}",
             enable=enable_expr,
         )
 

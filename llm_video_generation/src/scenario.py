@@ -24,49 +24,40 @@ MODEL_STRUCT  = "gpt-4o-mini"
 WRAP_LEN_DIALOG   = 35  # メイン・結論
 WRAP_LEN_INTRO    = 30  # イントロ
 
-# システムプロンプト（※内容は旧ファイルと同一、改変禁止）
+# システムプロンプト
 # --- 要点リスト生成用
 _SYSTEM_PROMPT_TOPICS = """
     あなたは受賞歴のある脚本家です。
-    ユーザーから提示された「テーマ」に対して、
-    その内容を解説動画に仕立てるための**トピック（小見出し）**を複数提案し、各トピックで語るべき要点を箇条書きしてください。
-    
+    ユーザーから提示された「テーマ」と「参考資料」に基づき、
+    解説動画に仕立てるための **トピック（小見出し）** と各トピックで語るべき要点を抽出してください。
+
     # 出力形式（JSON）
-    
-    {{
-        "introduction": {{
+
+    {
+        "introduction": {
             "title": "<タイトル>",
-            "points": [
-                "<要点（問い・フック・導入）>" // 要点は1つだけ
-            ]
-        }},
+            "points": ["<要点（問い・フック・導入）>"]
+        },
         "topics": [
-            {{
+            {
                 "title": "<サブトピックタイトル>",
-                "points": [
-                    "<要点1>" // 要点は1つだけ
-                ]
-            }}
-        // ... 他トピックも同様 ...
+                "points": ["<要点1>"]
+            }
         ],
-        "conclusion": {{
+        "conclusion": {
             "title": "<タイトル>",
-            "points": [
-                "<まとめ要点>" // 要点は1つだけ
-            ]
-        }}
-    }}
+            "points": ["<まとめ要点>"]
+        }
+    }
 
     # 制約・ルール
-    - **introduction** では本題に入る前のワクワクするフックを置く。
-    - **conclusion** では視聴後の余韻と次への好奇心を残すように。
+    - 必ず【参考資料】の内容に基づいて要点を抽出すること。
+    - 想像や補完は禁止。資料に書かれていないことは言及しない。
+    - 各要点は資料の内容に忠実に、できるだけ具体的に記述する。(何年の、誰の、どのような研究か)
+    - 要点はどれだけ長くなっても良いので可能な限り細かく記述する
     - タイトルは15文字以内。
-    - 要点は文字数の制限は考えず可能な限り細かく具体的に記述をする。
-    - **トピック数** は `{min_subtopics}` 個とする。
-    - 各トピックは幅広い一般論を避け、**具体例**を交える。
-    - 各トピックはテーマから外れた内容にしない。
-    - 「上級者が見て学術的で面白い」レベル感を意識する。
-    - 出力は **整形済みJSONオブジェクトのみ**。前後に余計な文字やコードブロック記号を付けない。
+    - **トピック数** は 参考資料のトピックの数とする。
+    - 出力は整形済みJSONオブジェクトのみ。前後に余計な文字列は禁止。
 """
 
 # --- イントロ台本生成用
@@ -123,12 +114,12 @@ _SYSTEM_PROMPT_SCENARIO = """
     * 語尾は「〜なのだ」「〜のだ」。疑問形は「〜のだ？」のみ。
 
     # 出力ルール
-    1. **台本はプレーンテキストのみ**。
-    2. 各台詞は「キャラ名：本文」の形式。
-    3. **1発話70文字以内**、**総文字数800文字±5%**。
-    4. 与えられた現在のトピックにのみ焦点を当てること。他の話題に脱線しない。
-    5. 会話の自然さを重視する。
-    6. 「上級者向けだが初学者が見ても面白い」レベル感を意識する。
+    1. 「ファクトベース」で厳密で論理的な台本。要点に書かれているファクトを論理的に考察する。
+    2. **台本はプレーンテキストのみ**。
+    3. 各台詞は「キャラ名：本文」の形式。
+    4. **1発話70文字以内**、**総文字数800文字±5%**。
+    5. 与えられた現在のトピックにのみ焦点を当てること。他の話題に脱線しない。
+    6. 会話の自然さを重視する。
 
     # 入力形式（ユーザーから与えられる情報）
     【台本全体の構成（要約）】
@@ -293,20 +284,20 @@ class OpenAIClient:
 
 # ===================== シナリオ生成 =======================
 class ScenarioBuilder:
-    """テーマ文字列から構造化済みシナリオ JSON を生成する高レベル API"""
+    """テーマ + 参考資料 から構造化済みシナリオ JSON を生成する高レベル API"""
 
     def __init__(self, client: OpenAIClient):
         self.ai = client
 
     # ---------- ステップ 1: 要点リスト ----------
-    def _make_topic_outline(self, theme: str, minutes: int) -> Dict:
-        sys_p = _SYSTEM_PROMPT_TOPICS.format(min_subtopics=max(1, minutes))
-        user_p = f"【テーマ】{theme}"
+    def _make_topic_outline(self, theme: str, minutes: int, reference: str = "") -> Dict:
+        sys_p = _SYSTEM_PROMPT_TOPICS
+        user_p = f"【テーマ】{theme}\n\n【参考資料】\n{reference}"
         content = self.ai.chat(
             MODEL_TOPIC,
             [
                 {"role": "system", "content": sys_p},
-                {"role": "user",   "content": user_p},
+                {"role": "user", "content": user_p},
             ],
             temperature=0.7,
             top_p=0.9,
@@ -315,20 +306,21 @@ class ScenarioBuilder:
         return json.loads(content)
 
     # ---------- ステップ 2: イントロ ----------
-    def _build_intro(self, intro_meta: Dict, outline_all: List[Dict]) -> Dict:
-        script = self._generate_intro_script(intro_meta, outline_all)
+    def _build_intro(self, intro_meta: Dict, outline_all: List[Dict], theme: str) -> Dict:
+        script = self._generate_intro_script(intro_meta, outline_all, theme)
         intro_json = self._structure_intro(script)
         # 折り返し
         for t in intro_json["text"]:
             t["script"] = _wrap_text(t["script"], WRAP_LEN_INTRO)
         return intro_json
 
-    def _generate_intro_script(self, meta: Dict, outline: List[Dict]) -> str:
+    def _generate_intro_script(self, meta: Dict, outline: List[Dict], theme: str) -> str:
         outline_str = "\n".join(
             f"{i+1}. {o['title']} – {' / '.join(o['points'])}"
             for i, o in enumerate(outline)
         )
         user_p = (
+            f"【テーマ】{theme}\n"                                 # ← ★追加
             "【台本全体の構成（要約）】\n" + outline_str + "\n\n" +
             f"【現在のトピック】{meta['title']}\n" +
             "【ポイント】\n" + "\n".join(f"- {p}" for p in meta["points"])
@@ -358,7 +350,7 @@ class ScenarioBuilder:
         return json.loads(content)["introduction"]
 
     # ---------- ステップ 3: メイントピック（ループ） ----------
-    def _build_main_segments(self, topics: List[Dict], outline_all: List[Dict]) -> List[Dict]:
+    def _build_main_segments(self, topics: List[Dict], outline_all: List[Dict], theme: str) -> List[Dict]:
         segments: List[Dict] = []
         counter = itertools.count(1)
         for idx, t in enumerate(topics, 1):
@@ -366,7 +358,7 @@ class ScenarioBuilder:
             # 質問化
             conv_points = self._convert_to_questions(t["points"])
             # 台本生成 → 構造化
-            script = self._generate_dialogue_script(t["title"], conv_points, outline_all)
+            script = self._generate_dialogue_script(t["title"], conv_points, outline_all, theme)
             segs   = self._structure_dialogue(script)
             # id 付与 & 折り返し
             for s in segs:
@@ -390,12 +382,16 @@ class ScenarioBuilder:
                 out.append(f"なんで{p}の？")
         return out
 
-    def _generate_dialogue_script(self, title: str, points_q: List[str], outline: List[Dict], *, mode: str="body") -> str:
+    def _generate_dialogue_script(
+        self, title: str, points_q: List[str],
+        outline: List[Dict], theme: str, *, mode: str="body"
+    ) -> str:
         outline_str = "\n".join(
             f"{i+1}. {o['title']} – {' / '.join(o['points'])}"
             for i, o in enumerate(outline)
         )
         user_p = (
+            f"【テーマ】{theme}\n"
             "【台本全体の構成（要約）】\n" + outline_str + "\n\n" +
             f"【現在のトピック】{title}\n" +
             "【ポイント】\n" + "\n".join(f"- {p}" for p in points_q)
@@ -426,11 +422,12 @@ class ScenarioBuilder:
         return json.loads(content)["segments"]
 
     # ---------- ステップ 4: 結論 ----------
-    def _build_conclusion(self, concl_meta: Dict, outline_all: List[Dict]) -> Dict:
+    def _build_conclusion(self, concl_meta: Dict, outline_all: List[Dict], theme: str) -> Dict:
         script = self._generate_dialogue_script(
             concl_meta["title"],
             self._convert_to_questions(concl_meta["points"]),
             outline_all,
+            theme,
             mode="conclusion",
         )
         concl_json = self._structure_conclusion(script)
@@ -456,26 +453,27 @@ class ScenarioBuilder:
         return json.loads(content)["conclusion"]
 
     # ---------- Public API ----------
-    def run(self, theme: str, minutes: int) -> Dict:
-        """テーマ → 完全構造化 JSON"""
+    def run(self, theme: str, minutes: int, reference: str = "") -> Dict:
+        """テーマ + 参考資料 → 完全構造化 JSON"""
         # 1) 要点リスト（アウトライン）
-        outline = self._make_topic_outline(theme, minutes)
-        intro_meta  = outline["introduction"]
+        outline = self._make_topic_outline(theme, minutes, reference)
+        intro_meta = outline["introduction"]
         topics_meta = outline["topics"]
-        concl_meta  = outline["conclusion"]
+        concl_meta = outline["conclusion"]
         outline_all = [intro_meta] + topics_meta + [concl_meta]
 
         # 2) イントロ
-        intro_json = self._build_intro(intro_meta, outline_all)
+        intro_json    = self._build_intro(intro_meta, outline_all, theme)
 
         # 3) メインループ
-        main_segments = self._build_main_segments(topics_meta, outline_all)
+        main_segments = self._build_main_segments(topics_meta, outline_all, theme)
 
         # 4) 結論
-        concl_json = self._build_conclusion(concl_meta, outline_all)
+        concl_json    = self._build_conclusion(concl_meta, outline_all, theme)
 
         # 5) 連結して返す
         return {
+            "theme": theme,                     # ← ★ここを追加
             "introduction": intro_json,
             "segments": main_segments,
             "conclusion": concl_json,
@@ -484,27 +482,29 @@ class ScenarioBuilder:
 
 # ===================== 動作テスト =========================
 if __name__ == "__main__":
-
-    import format
     from rich import print
+    import format
 
-    THEME    = "【雑学】生物に必ず炭素が含まれている理由"
-    MINUTES  = 2
+    THEME = "あなたはなぜ“つい後回し”してしまうのか？"
+    MINUTES = 2
+
+
+    with open(r"llm_video_generation\data\1\ref.txt", 'r', encoding='utf-8') as f:
+        REFERENCE = f.readlines()
 
     builder = ScenarioBuilder(OpenAIClient())
-    result  = builder.run(THEME, MINUTES)
+    result = builder.run(THEME, MINUTES, reference=REFERENCE)
 
     result = format.insert_sound_info(
         result,
         intro_bgm="llm_video_generation/assets/bgm/Mineral.mp3",
         intro_se="llm_video_generation/assets/se/5.mp3",
         body_bgm="llm_video_generation/assets/bgm/Voice.mp3",
-        body_se="llm_video_generation/assets/se/3.mp3"
+        body_se="llm_video_generation/assets/se/3.mp3",
     )
 
-    with open('./llm_video_generation/src/s.txt', 'w', encoding='utf-8') as f:
+    with open("./llm_video_generation/src/s.txt", "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
 
-    # 画面確認用に JSON を出力
     print(json.dumps(result, ensure_ascii=False, indent=2))
-# =========================================================
+

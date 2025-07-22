@@ -5,38 +5,33 @@
     "body_bgm": "llm_video_generation/assets/bgm/Voice.mp3",
     "body_se": "llm_video_generation/assets/se/3.mp3"
   },
+  "theme": "あなたはなぜ“つい後回し”してしまうのか？",
   "introduction": {
-    "title": "炭素の生命における重要性",
+    "title": "先延ばし行動の心理とは",
     "text": [
       {
         "id": 1,
-        "script": "炭素は、なぜ生物にとってなくてはならない存在なのでしょうか。",
-        "face": 3
+        "script": "先延ばし行動、ついしてしまうことはありませんか？"
       },
       {
         "id": 2,
-        "script": "この小さな元素が、生命の基盤を支えている秘密に迫ります。",
-        "face": 2
+        "script": "この行動の背後には、どんな心理メカニズムが潜んでいるのでしょ\nうか。"
       },
       {
         "id": 3,
-        "script": "例えば、あなたの体内にはどれだけの炭素が存在しているか、\nご存知ですか？",
-        "face": 2
+        "script": "実は、これを理解することで、自己改善の道が開けるのです。"
       },
       {
         "id": 4,
-        "script": "実は、炭素は私たちのDNAやタンパク質といった重要な分子の構\n成要素です。",
-        "face": 9
+        "script": "なぜ、やるべきことを後回しにしてしまうのでしょうか？"
       },
       {
         "id": 5,
-        "script": "生物の体を作るだけでなく、地球規模でのエネルギー流れにも関与\nしています。",
-        "face": 2
+        "script": "その鍵を探ることで、あなたの行動が変わる可能性があります。"
       },
       {
         "id": 6,
-        "script": "次に、炭素の化学的特性がどのように複雑な分子を形作るのかを探\nっていきましょう。",
-        "face": 7
+        "script": "次は、この心の動きを詳しく解説します。"
       }
     ]
   },
@@ -44,8 +39,7 @@
     {
       "id": 1,
       "type": "topic",
-      "title": "炭素の結合について",
-      "design": "1"
+      "title": "先延ばし行動と遺伝子"
     },
     {
       "id": 2,
@@ -53,7 +47,7 @@
       "script": {
         "speaker": "1",
         "face": "normal1",
-        "text": "炭素が4つの結合を作れる理由は、その電子配置にありますのよ。"
+        "text": "ずんだもん、先延ばし行動の背後には遺伝子が関係していることを知っている\nかしら？"
       }
     },
     {
@@ -62,7 +56,7 @@
       "script": {
         "speaker": "2",
         "face": "normal2",
-        "text": "どういうことなのだ？"
+        "text": "遺伝子なのだ？どうして先延ばしに関係するのだ？"
       }
     },
     {
@@ -70,8 +64,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "normal1",
-        "text": "炭素は電子を4つ持っているから、4つの他の原子と結合できますの。"
+        "face": "normal3",
+        "text": "Di Noceraらの研究でCOMT遺伝子 Val158Metが重要で\nすの。これはドーパミン代謝に関与するの。"
       }
     },
     {
@@ -79,8 +73,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal2",
-        "text": "4つも結合できると、何が良いのだ？"
+        "face": "normal4",
+        "text": "ドーパミンって、脳の報酬系に関わる物質なのだね？"
       }
     },
     {
@@ -89,7 +83,7 @@
       "script": {
         "speaker": "1",
         "face": "normal1",
-        "text": "それで複雑な分子構造が作れるの。まるでレゴブロックのようにね。"
+        "text": "ええ、その通りですわ。ドーパミンはやる気や報酬感に影響を与えるのです。"
       }
     },
     {
@@ -98,7 +92,7 @@
       "script": {
         "speaker": "2",
         "face": "normal2",
-        "text": "なるほど、いろいろな形ができるのだ。"
+        "text": "じゃあ、COMT遺伝子がどう先延ばしに影響するのだ？"
       }
     },
     {
@@ -106,8 +100,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "normal1",
-        "text": "その通りですわ。それがDNAやタンパク質を形作る基礎になりますのよ。"
+        "face": "normal3",
+        "text": "Met158型の人はドーパミンの処理が効率的で、課題を早く始める傾向が\nあるの。"
       }
     },
     {
@@ -115,8 +109,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal2",
-        "text": "だから生命の基本的な構成要素になるのか。"
+        "face": "normal4",
+        "text": "なるほど。じゃあVal158型はどうなのだ？"
       }
     },
     {
@@ -125,7 +119,7 @@
       "script": {
         "speaker": "1",
         "face": "normal1",
-        "text": "ええ、生命体は多様な機能を持つために、多様な分子が必要ですの。"
+        "text": "Val158型はドーパミンが過剰になることがあり、緊張感を求めて締め切\nり直前に動くことが多いわ。"
       }
     },
     {
@@ -133,8 +127,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal2",
-        "text": "炭素のおかげで、それが可能になるのだね。"
+        "face": "surprised",
+        "text": "そうだったのか！じゃあ、ボクはどっちのタイプなんだろう。"
       }
     },
     {
@@ -142,8 +136,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "normal1",
-        "text": "その通りですわ。炭素の柔軟性が生物の多様性を支えているの。"
+        "face": "normal2",
+        "text": "それは個人差があるから、知るには検査が必要ですわね。"
       }
     },
     {
@@ -151,8 +145,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal2",
-        "text": "炭素って本当にすごいのだ。"
+        "face": "normal3",
+        "text": "なるほど、遺伝子と行動って深く結びついているのだね。"
       }
     },
     {
@@ -160,8 +154,8 @@
       "type": "dialogue",
       "script": {
         "speaker": "1",
-        "face": "normal1",
-        "text": "ええ、炭素の特性が生命を支えているのは奇跡的ですのよ。"
+        "face": "normal4",
+        "text": "そう、脳の働きが行動パターンに影響するのは興味深いことですわね。"
       }
     },
     {
@@ -169,150 +163,614 @@
       "type": "dialogue",
       "script": {
         "speaker": "2",
-        "face": "normal2",
-        "text": "もっと炭素のことを知りたくなったのだ。"
+        "face": "normal1",
+        "text": "めたん、ありがとう。もっと先延ばしについて知りたいのだ！"
       }
     },
     {
       "id": 16,
+      "type": "topic",
+      "title": "時間割引モデルについて"
+    },
+    {
+      "id": 17,
       "type": "dialogue",
       "script": {
         "speaker": "1",
         "face": "normal1",
-        "text": "それは良いことですわ。炭素を知ることは生命を理解する一歩ですのよ。"
+        "text": "ずんだもん、この時間割引モデルについて知っているかしら？"
       }
-    },
-    {
-      "id": 17,
-      "type": "topic",
-      "title": "炭素循環について",
-      "design": "2"
     },
     {
       "id": 18,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
-        "face": "normal1",
-        "text": "炭素循環について話しましょうか。これは地球の生命活動にとても重要なので\nすわ。"
+        "speaker": "2",
+        "face": "normal2",
+        "text": "少しだけなのだ。将来の報酬を軽視してしまうから先延ばしになるという話だ\nよね？"
       }
     },
     {
       "id": 19,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "normal2",
-        "text": "どうして炭素循環がそんなに大事なのだ？"
+        "speaker": "1",
+        "face": "normal3",
+        "text": "そうですわ。ZhangとMaの研究によると、時間割引率が高いと現在の利\n益を重視してしまうの。"
       }
     },
     {
       "id": 20,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
-        "face": "normal3",
-        "text": "炭素はエネルギーの流れを支える役割を持っているのですの。光合成を例にと\nりましょう。"
+        "speaker": "2",
+        "face": "normal4",
+        "text": "それで将来の利益が小さく見えてしまうのだね？"
       }
     },
     {
       "id": 21,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "normal4",
-        "text": "光合成は植物がやるやつなのだよね？"
+        "speaker": "1",
+        "face": "normal1",
+        "text": "その通り。例えば、今日100円もらうのと、1年後に110円もらうの、\nどちらがいいかしら？"
       }
     },
     {
       "id": 22,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
-        "face": "normal1",
-        "text": "その通りですわ。植物は二酸化炭素を取り込んで、太陽の光を使いエネルギー\nを作り出しますのよ。"
+        "speaker": "2",
+        "face": "normal2",
+        "text": "うーん、今すぐ100円の方が嬉しい気がするのだ。"
       }
     },
     {
       "id": 23,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "normal2",
-        "text": "それで炭素はどう循環するのだ？"
+        "speaker": "1",
+        "face": "normal3",
+        "text": "それがまさに時間割引の影響。今の利益が過大評価されやすいのです。"
       }
     },
     {
       "id": 24,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
-        "face": "normal3",
-        "text": "植物が作った有機物を動物が食べることで、炭素は動物にも移ります。\nそして呼吸によって再び二酸化炭素として空気中に戻るのですわ。"
+        "speaker": "2",
+        "face": "normal4",
+        "text": "なるほど、だから締め切り前に焦ってしまうのだね。"
       }
     },
     {
       "id": 25,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "surprised",
-        "text": "なるほど！それが炭素循環なのだね。"
+        "speaker": "1",
+        "face": "normal1",
+        "text": "ええ。未来の自分を信頼できず、目先の欲望に振り回されることが原因なの。"
       }
     },
     {
       "id": 26,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
-        "face": "normal4",
-        "text": "ええ、そしてこのプロセスがエネルギーの流れを支えているのですの。\n生命の基本的な部分ですわ。"
+        "speaker": "2",
+        "face": "normal2",
+        "text": "じゃあ、どうすればこの先延ばしを減らせるのだ？"
       }
     },
     {
       "id": 27,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "normal1",
-        "text": "炭素がこんなに重要だとは知らなかったのだ。"
+        "speaker": "1",
+        "face": "normal3",
+        "text": "まずは、将来の自分を意識し、長期的な利益を考える訓練が必要ね。"
       }
     },
     {
       "id": 28,
       "type": "dialogue",
       "script": {
-        "speaker": "1",
-        "face": "normal2",
-        "text": "炭素循環がなければ、エネルギーの供給が途絶えてしまうのですわ。\n生物の多様性に欠かせないプロセスですのよ。"
+        "speaker": "2",
+        "face": "normal4",
+        "text": "具体的にはどうするのだ？"
       }
     },
     {
       "id": 29,
       "type": "dialogue",
       "script": {
-        "speaker": "2",
-        "face": "normal3",
-        "text": "地球は本当にうまくできているのだね。"
+        "speaker": "1",
+        "face": "normal1",
+        "text": "スケジュールを立てたり、小さな成功体験を積み重ねるのが効果的ですわ。"
       }
     },
     {
       "id": 30,
       "type": "dialogue",
       "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "なるほど。ちょっとずつ意識を変えることが大事なのだね。"
+      }
+    },
+    {
+      "id": 31,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "その通り。コツコツと習慣化することで改善されますわよ。"
+      }
+    },
+    {
+      "id": 32,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "ありがとう、めたん。ボクも頑張ってみるのだ！"
+      }
+    },
+    {
+      "id": 33,
+      "type": "topic",
+      "title": "先延ばし行動の背景"
+    },
+    {
+      "id": 34,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "ずんだもん、先延ばし行動の背景には認知のゆがみがあるのですわ。"
+      }
+    },
+    {
+      "id": 35,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "認知のゆがみって何なのだ？"
+      }
+    },
+    {
+      "id": 36,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "自分の思考が現実を歪めて解釈してしまうことですの。例えば、自分を無能だ\nと思い込むことですわ。"
+      }
+    },
+    {
+      "id": 37,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "どうしてそんな思考になるのだ？"
+      }
+    },
+    {
+      "id": 38,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "それは「否定的な自動思考」と呼ばれるものですの。無意識に自分を否定する\n習慣がついているのですわ。"
+      }
+    },
+    {
+      "id": 39,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "それがどうして先延ばしにつながるのだ？"
+      }
+    },
+    {
+      "id": 40,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "劣等感や不安を引き起こし、行動する気力を奪ってしまうからですわ。\nすると、作業を後回しにしやすくなるのです。"
+      }
+    },
+    {
+      "id": 41,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "悪循環なのだね。"
+      }
+    },
+    {
+      "id": 42,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "ええ、先延ばし行動が不安を増し、さらに自己評価を下げるという循環ですの\nよ。"
+      }
+    },
+    {
+      "id": 43,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "どうしたらその循環を断ち切れるのだ？"
+      }
+    },
+    {
+      "id": 44,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "まずは否定的な思考を意識し、現実的に考え直すことが必要ですわね。"
+      }
+    },
+    {
+      "id": 45,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "具体的にはどうするのだ？"
+      }
+    },
+    {
+      "id": 46,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "例えば、自分が無能だと思った時に、過去の成功体験を振り返るのですわ。\nそれにより、自己評価をバランスさせるのです。"
+      }
+    },
+    {
+      "id": 47,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "それで不安が減るのだね。"
+      }
+    },
+    {
+      "id": 48,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "そうですわ。少しずつ自信を持つことで、行動への意欲が湧いてくるはずです\nわよ。"
+      }
+    },
+    {
+      "id": 49,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "なるほど、自分の思考を見直すことが大切なのだね。"
+      }
+    },
+    {
+      "id": 50,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "その通りですわ。これが先延ばし克服の一助になりますのよ。"
+      }
+    },
+    {
+      "id": 51,
+      "type": "topic",
+      "title": "先延ばしの理由について"
+    },
+    {
+      "id": 52,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "ずんだもん、わたくしたちが先延ばしをする理由を考えてみましょうか。\nSiroisとPychylの研究では、先延ばしをネガティブ感情からの回\n避と捉えているの。"
+      }
+    },
+    {
+      "id": 53,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "ネガティブ感情って、どんな感情なのだ？"
+      }
+    },
+    {
+      "id": 54,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "例えば、作業に対する嫌悪感や不安、ストレスなどね。これらが作業を避ける\n理由になるのですわ。"
+      }
+    },
+    {
+      "id": 55,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "だから、嫌な作業を後回しにしてしまうのだね？"
+      }
+    },
+    {
+      "id": 56,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "その通りですわ。短期的には気分が良くなるけれど、結局期限直前に大きなス\nトレスがかかるの。"
+      }
+    },
+    {
+      "id": 57,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "つまり、目先の気分のために先延ばししちゃうのだ？"
+      }
+    },
+    {
+      "id": 58,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "そうですのよ。長期的なデメリットを見逃しがちなのが問題なの。"
+      }
+    },
+    {
+      "id": 59,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "でも、どうすればこの先延ばしを防げるのかな？"
+      }
+    },
+    {
+      "id": 60,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "まずは、そのネガティブ感情を認識すること。それから、感情に振り回されな\nいよう訓練することが大事ですわ。"
+      }
+    },
+    {
+      "id": 61,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "感情をコントロールする訓練って、具体的にはどうするのだ？"
+      }
+    },
+    {
+      "id": 62,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "例えば、マインドフルネスの実践が有効ですわ。感情を客観的に観察すること\nで、冷静に対応できますのよ。"
+      }
+    },
+    {
+      "id": 63,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "なるほど、気持ちを整えることで先延ばしを減らせるのだね。"
+      }
+    },
+    {
+      "id": 64,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "ええ、その通りですわ。感情を理解し、適切に対処することで、先延ばしを克\n服できるのですわよ。"
+      }
+    },
+    {
+      "id": 65,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "よーし、ボクも感情と向き合ってみるのだ！どこから始めればいいのかな？"
+      }
+    },
+    {
+      "id": 66,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal2",
+        "text": "まずは、自分がどんな感情を抱いているかを記録すると良いですわね。\nそれが第一歩ですのよ。"
+      }
+    },
+    {
+      "id": 67,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal3",
+        "text": "わかったのだ！少しずつでも、やってみるのだ。ありがとなのだ、めたん！"
+      }
+    },
+    {
+      "id": 68,
+      "type": "dialogue",
+      "script": {
         "speaker": "1",
         "face": "normal4",
-        "text": "そうですわね。炭素循環を理解することは、地球の生態系の理解に繋がります\nのよ。"
+        "text": "お役に立てて嬉しいですわ。頑張ってくださいね、ずんだもん。"
+      }
+    },
+    {
+      "id": 69,
+      "type": "topic",
+      "title": "マインドフルネス瞑想の効果"
+    },
+    {
+      "id": 70,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "ずんだもん、Soleimani Radら (2023年) の研究は興味\n深いですわね。"
+      }
+    },
+    {
+      "id": 71,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "うん、マインドフルネス瞑想が先延ばしを減らすってどういうことなのだ？"
+      }
+    },
+    {
+      "id": 72,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "それは、マインドフルネス瞑想が心を静め、自己統制力を高めるからですのよ\n。"
+      }
+    },
+    {
+      "id": 73,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "自己統制力が高まると、どう変わるのだ？"
+      }
+    },
+    {
+      "id": 74,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "自己統制力が高まると、注意力が向上し、感情に流されず目標を見失わないの\nですわ。"
+      }
+    },
+    {
+      "id": 75,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "だから、先延ばしが減るのだね。"
+      }
+    },
+    {
+      "id": 76,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "ええ、正にその通り。瞑想で心を鍛え、現実に集中する力がつくのですわ。"
+      }
+    },
+    {
+      "id": 77,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "でも、マインドフルネスって具体的に何をするのだ？"
+      }
+    },
+    {
+      "id": 78,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "呼吸に意識を向け、今この瞬間を感じることですの。過去や未来に囚われない\n練習ですわ。"
+      }
+    },
+    {
+      "id": 79,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "なるほど、だから先延ばしが減るのか。"
+      }
+    },
+    {
+      "id": 80,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "ええ、そしてこの訓練が習慣化すれば、日常の行動にも良い影響が出ますの。"
+      }
+    },
+    {
+      "id": 81,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "すごいのだ。瞑想で先延ばしを克服できるなんて。"
+      }
+    },
+    {
+      "id": 82,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "はい、ずんだもんも試してみては？気持ちのコントロールがきっと楽になりま\nすわよ。"
+      }
+    },
+    {
+      "id": 83,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "うん、試してみるのだ！ありがとう、めたん。"
       }
     }
   ],
   "conclusion": {
-    "title": "炭素の役割についてのまとめ",
+    "title": "先延ばし克服の鍵",
     "text": [
       {
         "id": 1,
         "type": "topic",
-        "title": "炭素の重要性"
+        "title": "先延ばし克服の鍵"
       },
       {
         "id": 2,
@@ -320,7 +778,7 @@
         "script": {
           "speaker": "1",
           "face": "normal1",
-          "text": "いかがだったかしら、炭素の役割について。"
+          "text": "いかがだったかしら、ずんだもん。先延ばし克服の鍵をお話ししましたわ。"
         }
       },
       {
@@ -329,7 +787,7 @@
         "script": {
           "speaker": "2",
           "face": "normal2",
-          "text": "炭素が生命の基盤であることがよくわかったのだ。"
+          "text": "先延ばしの心理についてよくわかったのだ。具体的な対策が大事なのだね。"
         }
       },
       {
@@ -338,7 +796,7 @@
         "script": {
           "speaker": "1",
           "face": "normal3",
-          "text": "炭素を知ることで、生物の多様性や環境理解が深まるのですわ。"
+          "text": "そうですのよ、自分の心理を理解し、行動を変える手助けができますわ。"
         }
       },
       {
@@ -347,7 +805,7 @@
         "script": {
           "speaker": "2",
           "face": "normal4",
-          "text": "なるほど、だから炭素は大切なのだ。"
+          "text": "次は何をすればいいのだ？"
         }
       },
       {
@@ -356,7 +814,7 @@
         "script": {
           "speaker": "1",
           "face": "normal1",
-          "text": "ええ、次はどんなことを探求してみたいかしら。考えてみるのも楽しいですわ\nね。"
+          "text": "まずは自分を見つめ直して、小さな一歩から始めてみてはいかがかしら？\n次回もお楽しみにですわ。"
         }
       }
     ]

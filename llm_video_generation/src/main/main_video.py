@@ -72,8 +72,17 @@ TOPIC_STYLES: dict[str, dict] = {
         "char_scale": 650,
         "char_pos": (800, 100),
     },
-    "1": {
-        "bg": "llm_video_generation/assets/background/3.png",
+    "3": {
+        "bg": "llm_video_generation/assets/background/6.png",
+        "rect_outer": "#f58db6@0.80",
+        "rect_inner": "#3c8ce4",
+        "text_color": "orange",
+        "char": f"{CHAR_ROOT}/ずんだもん/normal4.png",
+        "char_scale": 700,
+        "char_pos": (780, 50),
+    },
+    "4": {
+        "bg": "llm_video_generation/assets/background/7.png",
         "rect_outer": "#f58db6@0.80",
         "rect_inner": "#3c8ce4",
         "text_color": "orange",
@@ -352,7 +361,11 @@ class VideoAssembler:
         audio_idx = 0  # dialogue ごとに消費
         img_idx = 0    # dialogue ごとに消費
 
-        for seq_idx, seg in enumerate(scenario["segments"], 1):
+        seg_source = list(scenario["segments"])
+        conc = scenario.get("conclusion", {})
+        seg_source.extend(conc.get("text", []))
+
+        for seq_idx, seg in enumerate(seg_source, 1):
             # topic --------------------------------------------------
             if seg["type"] == "topic":
                 current_topic = seg.get("title", "")

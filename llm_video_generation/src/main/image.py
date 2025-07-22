@@ -37,6 +37,14 @@ def extract_segment_prompts(scenario: dict) -> List[str]:
             prompts.append(seg["title"])
     return prompts
 
+import re, urllib.parse
+_SANITIZE = re.compile(r'[^a-z ]+')
+
+def sanitize_kw(kw: str, limit: int = 80) -> str:
+    kw = kw.lower()
+    kw = _SANITIZE.sub(' ', kw)       # 記号・数字を除去
+    kw = ' '.join(kw.split())         # 連続空白を1つに
+    return urllib.parse.quote_plus(kw[:limit])
 
 # ------------------------------------------------------------------------------
 # LLM でキーワード生成
@@ -84,8 +92,6 @@ class KeywordGenerator:
         for _ in range(max_retry):
             reply = self._chat(user_prompt)
             try:
-                reply = self._chat(user_prompt)
-                # print("[DEBUG] GPT raw reply:\n", reply[:300])
                 keywords = json.loads(reply)
             except json.JSONDecodeError:
                 continue
@@ -108,7 +114,7 @@ class KeywordGenerator:
     def _chat(self, user_content: str) -> str:
         resp = self.client.chat.completions.create(
             model=self.model,
-            temperature=0.7,
+            temperature=0.3,
             top_p=0.9,
             messages=[
                 {"role": "system", "content": self._SYSTEM_PROMPT},
@@ -154,6 +160,10 @@ class PixabayFetcher:
 
     def search_first_url(self, idx: int, query: str) -> str | None:
         """query で最初にヒットした画像 URL (webformatURL) を返す"""
+
+        query = sanitize_kw(query)
+        if not query:
+            return None
         params = {
             "key": self.api_key,
             "q": query,

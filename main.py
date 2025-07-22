@@ -151,7 +151,8 @@ def main() -> None:
 
 
     image_urls   = collect_images(script)
-    intro_path   = create_intro_video(script)
+    #intro_path   = create_intro_video(script)
+    intro_path = 'intro.mp4'
     body_path    = create_main_video(script, image_urls)
 
     final_path = concat_videos(intro_path, body_path, Path("final.mp4"))

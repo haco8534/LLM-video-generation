@@ -17,7 +17,7 @@ from __future__ import annotations
 import mimetypes
 import tempfile
 from pathlib import Path
-from typing import List, Dict, Sequence
+from typing import Sequence, Optional, Dict, List
 
 import requests
 import ffmpeg
@@ -274,14 +274,19 @@ def _build_topic_graph(title: str, design: str = "1"):
 # 画像キャッシュ helper
 # ──────────────────────────────
 
-def _cache_images(urls: Sequence[str], work_dir: Path) -> List[Path]:
+def _cache_images(urls: Sequence[Optional[str]], work_dir: Path) -> List[Path]:
     """URL 画像を work_dir に保存し Path のリストを返す"""
     cached: List[Path] = []
     for idx, url in enumerate(urls, 1):
-        ext = Path(url).suffix
+        if url is None:                                 # ← URL が無い → プレースホルダー
+            cached.append(Path("llm_video_generation/assets/no_image.png"))
+            continue
+
+        ext = Path(url).suffix                         # ← URL あり
         if not ext:
-            ct = requests.head(url, timeout=5).headers.get("content-type", "")
+            ct  = requests.head(url, timeout=5).headers.get("content-type", "")
             ext = mimetypes.guess_extension(ct) or ".jpg"
+
         path = work_dir / f"asset_{idx:03}{ext}"
         if not path.exists():
             r = requests.get(url, timeout=15)

@@ -77,7 +77,7 @@ class KeywordGenerator:
     6. セグメント内に複数の話題がある場合、**最も代表的なイメージ**を優先する
     '''
 
-    def __init__(self, client: OpenAI, *, model: str = "gpt-4.1-mini"):
+    def __init__(self, client: OpenAI, *, model: str = "gpt-5"):
         self.client = client
         self.model = model
 

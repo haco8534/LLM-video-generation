@@ -95,7 +95,7 @@ def concat_videos(intro_path: Path, body_path: Path, output_path: Path) -> Path:
 # ===== 台本生成 =====
 
 def generate_script(theme: str, minutes: int) -> dict:
-    scenario_service = scenario.ScenarioService()
+    scenario_service = scenario.ScenarioBuilder(scenario.OpenAIClient())
     raw_script      = scenario_service.run(theme, minutes)
     styled_script   = format.add_design_to_topics(raw_script)
     faced_script    = format.add_random_face(styled_script)
@@ -145,14 +145,10 @@ def create_main_video(script: dict, image_urls: list[str]) -> Path:
 # ===== 実行エントリポイント =====
 
 def main() -> None:
-    # script = generate_script(THEME, VIDEO_LENGTH_MINUTES)
-    with open(r"llm_video_generation\src\s.txt", encoding="utf-8") as f:
-        script = json.load(f)
-
-
+    script = generate_script(THEME, VIDEO_LENGTH_MINUTES)
+    
     image_urls   = collect_images(script)
-    #intro_path   = create_intro_video(script)
-    intro_path = 'intro.mp4'
+    intro_path   = create_intro_video(script)
     body_path    = create_main_video(script, image_urls)
 
     final_path = concat_videos(intro_path, body_path, Path("final.mp4"))

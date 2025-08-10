@@ -16,9 +16,9 @@ from openai import OpenAI
 
 # ===================== 共通定数 ===========================
 # OpenAI モデル名
-MODEL_TOPIC   = "gpt-4o-mini"
-MODEL_DIALOG  = "gpt-4o"
-MODEL_STRUCT  = "gpt-4o-mini"
+MODEL_TOPIC   = "gpt-5"
+MODEL_DIALOG  = "gpt-5"
+MODEL_STRUCT  = "gpt-5"
 
 # 台詞の自動折り返し長
 WRAP_LEN_DIALOG   = 35  # メイン・結論
@@ -263,6 +263,17 @@ def _wrap_text(text: str, max_len: int) -> str:
     if buf:
         lines.append(buf)
     return "\n".join(lines)
+
+def _sanitize_chat_opts(model: str, **opts):
+    """
+    モデルごとに未サポートな生成パラメータを落とす。
+    例: gpt-5 は temperature/top_p 等の任意値を受け付けない。
+    """
+    if model.startswith("gpt-5"):
+        # gpt-5 系はデフォルト以外を受け付けないので全部落とす
+        return {}
+    # None を除去してクリーンに
+    return {k: v for k, v in opts.items() if v is not None}
 # =========================================================
 
 # ===================== OpenAI ラッパ ======================
@@ -274,10 +285,11 @@ class OpenAIClient:
         self._cli = OpenAI(api_key=api_key or os.getenv("OPENAI_API_KEY"))
 
     def chat(self, model: str, messages: Sequence[Dict], **opts) -> str:
+        clean_opts = _sanitize_chat_opts(model, **opts)
         res = self._cli.chat.completions.create(
             model=model,
             messages=messages,
-            **opts,
+            **clean_opts,
         )
         return res.choices[0].message.content.strip()
 # =========================================================

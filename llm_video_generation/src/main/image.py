@@ -5,7 +5,8 @@ image_set.py
 Pixabay に適した画像を取得するユーティリティ
 
 - 1) Pixabay へ疎通確認（ping）
-- 2) OK なら GPT でキーワード生成
+- 2) OK なら GPT でキーワード生成（50件ごとに分割）
+-   2a) 失敗バッチは単発生成でフォールバック
 - 3) Pixabay で画像 URL を取得
 """
 
@@ -13,16 +14,18 @@ from __future__ import annotations
 
 import json
 import os
-from typing import List, Sequence
+import re
+import urllib.parse
+from typing import List, Sequence, Iterable, Any
 
 from dotenv import load_dotenv
 from openai import OpenAI
 import requests
 
+
 # ------------------------------------------------------------------------------
 # シナリオ関連
 # ------------------------------------------------------------------------------
-
 
 def extract_segment_prompts(scenario: dict) -> List[str]:
     """
@@ -37,7 +40,7 @@ def extract_segment_prompts(scenario: dict) -> List[str]:
             prompts.append(seg["title"])
     return prompts
 
-import re, urllib.parse
+
 _SANITIZE = re.compile(r'[^a-z ]+')
 
 def sanitize_kw(kw: str, limit: int = 80) -> str:
@@ -46,13 +49,13 @@ def sanitize_kw(kw: str, limit: int = 80) -> str:
     kw = ' '.join(kw.split())         # 連続空白を1つに
     return urllib.parse.quote_plus(kw[:limit])
 
+
 # ------------------------------------------------------------------------------
 # LLM でキーワード生成
 # ------------------------------------------------------------------------------
 
-
 class KeywordGenerator:
-    """OpenAI を用いて英語キーワードを生成"""
+    """OpenAI を用いて英語キーワードを生成（堅牢化版）"""
 
     _SYSTEM_PROMPT = '''
     # 役割
@@ -61,64 +64,148 @@ class KeywordGenerator:
     # 目的
     与えられた日本語テキストの配列を読み取り、各要素に対応する **Pixabay の画像検索に適した英語キーワード** を生成してください。
 
-    # 出力形式
-    - 一次元配列で出力（例: ["keyword one", "another example", "last one"]）
-    - 前後に余計な文字列・コードブロック記号は禁止。
-    - 入力配列と同じ要素数
+    # 出力形式（厳守）
+    - 一次元配列 JSON のみを返す（例: ["keyword one", "another example", "last one"]）
+    - 入力配列と**同じ要素数**
     - 各要素は英単語1〜3語（スペース区切り）、**すべて小文字**
     - 記号、句読点、固有名詞は含めない
-
-    # キーワード生成ルール
-    1. **Pixabayでヒットしやすい**、抽象的・汎用的な語を選ぶ  
-    2. 固有名詞・登録商標・人物名・サービス名などは避ける  
-    3. 文の意味を要約し、**視覚的に連想しやすい概念**に変換する  
-    4. 抽象語と具体語を組み合わせ、**写真・イラストの両方にマッチするキーワード**を作る  
-    5. 同義語がある場合は、**Pixabayで一般的な語**を選ぶ  
-    6. セグメント内に複数の話題がある場合、**最も代表的なイメージ**を優先する
+    - 余計な文字列・コードフェンス・説明文は一切禁止
     '''
 
-    def __init__(self, client: OpenAI, *, model: str = "gpt-5"):
+    _SYSTEM_PROMPT_ONE = '''
+    あなたは「Pixabay 用キーワード生成 AI」です。
+    次の日本語テキストを、Pixabay検索に適した**英語キーワード（小文字・1〜3語・記号なし）**で1つだけ返してください。
+    返答はプレーンテキストでキーワードのみ。説明・引用・句読点・コードフェンスは禁止。
+    '''
+
+    def __init__(self, client: OpenAI, *, model: str = "gpt-4.1"):
         self.client = client
         self.model = model
 
-    def generate(self, texts: Sequence[str], *, max_retry: int = 3) -> List[str]:
-        """texts と同数のキーワード配列を返す。数が合わなければリトライ"""
+    # ---------- public ----------
+
+    def generate(self, texts: Sequence[str], *, max_retry: int = 2) -> List[str]:
+        """
+        texts と同数のキーワード配列を返す。失敗時は
+        - JSON抽出のリカバリ
+        - ネスト配列の平坦化
+        - 長さ調整（>n は切り詰め、<n は単発生成で補完）
+        を行う。
+        """
         n = len(texts)
         user_prompt = (
-            f"要素数 {n} のリストです。必ず同じ数で返してください。\n"
+            f"要素数 {n} のリストです。必ず **同じ数** のJSON配列で返してください。\n"
             f"{json.dumps(list(texts), ensure_ascii=False)}"
         )
 
         for _ in range(max_retry):
             reply = self._chat(user_prompt)
-            try:
-                keywords = json.loads(reply)
-            except json.JSONDecodeError:
+            arr = self._extract_array(reply)
+
+            if arr is None:
                 continue
 
-            if isinstance(keywords, list) and len(keywords) == n:
-                return keywords
+            arr = self._flatten_once(arr)  # [[...], "..."] → ["...", "...", ...]
+            if len(arr) == n and all(isinstance(x, str) for x in arr):
+                return [self._post_sanitize(x) for x in arr]
 
+            if len(arr) > n:
+                return [self._post_sanitize(x) for x in arr[:n]]
+
+            if 0 < len(arr) < n:
+                # 足りないぶんは単発生成で補完
+                missing = [self.generate_one(t) for t in texts[len(arr):]]
+                merged = [self._post_sanitize(x) for x in (arr + missing)]
+                if len(merged) == n:
+                    return merged
+
+            # リトライ用メッセージ
             user_prompt = (
-                "⚠️ 要素数が違いました。もう一度 "
-                f"{n} 要素で返してください。\n"
+                f"⚠️ 要素数が {len(arr) if arr is not None else '不明'} でした。"
+                f"必ず {n} 要素の **一次元JSON配列**で返してください。\n"
                 f"リストは同じです: {json.dumps(list(texts), ensure_ascii=False)}"
             )
 
-        raise RuntimeError("Failed to obtain keyword list with correct length.")
+        # ここまでで合わなければ、全件を単発生成で確定させる
+        return [self.generate_one(t) for t in texts]
 
-    # ------------------------------------------------------------------
-    # internal
-    # ------------------------------------------------------------------
+    def generate_one(self, text: str) -> str:
+        """単発生成（最後の砦）。必ず1語〜3語の小文字英語に整形。"""
+        reply = self._chat_one(text)
+        # 行・カンマ・セミコロンで最初のトークン候補を取る
+        token = re.split(r'[\n,;]| +', reply.strip())[0:3]
+        guess = " ".join([t for t in token if t]).strip()
+        return self._post_sanitize(guess or "concept")
+
+    # ---------- internal ----------
+
+    def _post_sanitize(self, s: str) -> str:
+        s = s.lower()
+        s = re.sub(r'[^a-z ]+', ' ', s)
+        s = ' '.join(s.split())
+        # 1〜3語に丸める
+        parts = s.split(' ')[:3]
+        return ' '.join(parts) if parts else "concept"
+
+    def _extract_array(self, reply: str) -> List[Any] | None:
+        """JSON配列を頑健に抽出。コードフェンス除去 + 最初の[]をパース。"""
+        if not reply:
+            return None
+        txt = reply.strip()
+        # コードフェンス除去
+        txt = re.sub(r"^```.*?\n", "", txt, flags=re.S).strip()
+        txt = re.sub(r"\n```$", "", txt).strip()
+
+        # 1) そのままJSON
+        try:
+            obj = json.loads(txt)
+            if isinstance(obj, list):
+                return obj
+            if isinstance(obj, dict) and "keywords" in obj and isinstance(obj["keywords"], list):
+                return obj["keywords"]
+        except Exception:
+            pass
+
+        # 2) 最初の [ ... ] を抜き出して再トライ
+        m = re.search(r"\[[\s\S]*\]", txt)
+        if m:
+            try:
+                obj = json.loads(m.group(0))
+                if isinstance(obj, list):
+                    return obj
+            except Exception:
+                return None
+        return None
+
+    def _flatten_once(self, arr: List[Any]) -> List[str]:
+        out: List[str] = []
+        for x in arr:
+            if isinstance(x, list):
+                out.extend([str(y) for y in x])
+            else:
+                out.append(str(x))
+        return out
 
     def _chat(self, user_content: str) -> str:
+        resp = self.client.chat.completions.create(
+            model=self.model,
+            temperature=0.3,   # 安定性重視
+            top_p=0.9,
+            messages=[
+                {"role": "system", "content": self._SYSTEM_PROMPT},
+                {"role": "user", "content": user_content},
+            ],
+        )
+        return resp.choices[0].message.content.strip()
+
+    def _chat_one(self, text: str) -> str:
         resp = self.client.chat.completions.create(
             model=self.model,
             temperature=0.3,
             top_p=0.9,
             messages=[
-                {"role": "system", "content": self._SYSTEM_PROMPT},
-                {"role": "user", "content": user_content},
+                {"role": "system", "content": self._SYSTEM_PROMPT_ONE},
+                {"role": "user", "content": text},
             ],
         )
         return resp.choices[0].message.content.strip()
@@ -128,7 +215,6 @@ class KeywordGenerator:
 # Pixabay API 呼び出し
 # ------------------------------------------------------------------------------
 
-
 class PixabayFetcher:
     """Pixabay から画像 URL を取得"""
 
@@ -137,7 +223,6 @@ class PixabayFetcher:
     def __init__(self, api_key: str):
         self.api_key = api_key
 
-    # ---------- 追加 ----------
     def ping(self, timeout: int = 5) -> bool:
         """
         Pixabay API への疎通確認。
@@ -156,11 +241,9 @@ class PixabayFetcher:
         except requests.RequestException as e:
             print("[DEBUG] ping exception:", e)
             return False
-    # --------------------------
 
     def search_first_url(self, idx: int, query: str) -> str | None:
         """query で最初にヒットした画像 URL (webformatURL) を返す"""
-
         query = sanitize_kw(query)
         if not query:
             return None
@@ -179,6 +262,13 @@ class PixabayFetcher:
 # ------------------------------------------------------------------------------
 # Facade
 # ------------------------------------------------------------------------------
+
+CHUNK_SIZE = 50  # 50件ごとに分割
+
+def _chunked(seq: Sequence[str], size: int) -> Iterable[Sequence[str]]:
+    """単純な固定長分割ジェネレータ（最後は size 未満になりうる）"""
+    for i in range(0, len(seq), size):
+        yield seq[i : i + size]
 
 
 class ImageSetService:
@@ -209,9 +299,18 @@ class ImageSetService:
                 "Pixabay API に接続できません。APIキーまたはネットワークを確認してください。"
             )
 
-        # 2) GPT でキーワード生成（ここで初めてトークン消費）
+        # 2) GPT でキーワード生成（50件ごとに分割 → 結合）
         prompts = extract_segment_prompts(scenario)
-        keywords = self.keyword_gen.generate(prompts)
+
+        keywords: List[str] = []
+        for batch in _chunked(prompts, CHUNK_SIZE):
+            part = self.keyword_gen.generate(batch)
+            keywords.extend(part)
+
+        # 念のため総数を検証（理論上ここは常に一致する）
+        if len(keywords) != len(prompts):
+            # 万一ズレたら、最終フォールバック：全件単発生成で揃える
+            keywords = [self.keyword_gen.generate_one(t) for t in prompts]
 
         # 3) Pixabay で画像 URL を取得
         return [self.pixabay.search_first_url(idx, k) for idx, k in enumerate(keywords, 1)]

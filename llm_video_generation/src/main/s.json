@@ -1,0 +1,728 @@
+{
+  "sound": {
+    "intro_bgm": "llm_video_generation/assets/bgm/Mineral.mp3",
+    "intro_se": "llm_video_generation/assets/se/5.mp3",
+    "body_bgm": "llm_video_generation/assets/bgm/Voice.mp3",
+    "body_se": "llm_video_generation/assets/se/3.mp3"
+  },
+  "theme": "あなたはなぜ“つい後回し”してしまうのか？",
+  "introduction": {
+    "title": "なぜ先延ばしするのか？",
+    "text": [
+      {
+        "id": 1,
+        "script": "なぜ私たちは、やるべきことをわかっていても後回しにしてしまう\nのでしょうか。",
+        "face": 5
+      },
+      {
+        "id": 2,
+        "script": "先延ばしは単なる意志の弱さではなく、多様な心理メカニズムが関\n与しています。",
+        "face": 6
+      },
+      {
+        "id": 3,
+        "script": "本動画では最新の心理学研究をもとに、その背景を5つの視点で分\nかりやすく紐解きます。",
+        "face": 4
+      },
+      {
+        "id": 4,
+        "script": "脳の報酬系や時間感覚、認知のゆがみ、感情回避などがどのように\n絡むのか見ていきます。",
+        "face": 4
+      },
+      {
+        "id": 5,
+        "script": "自分の「つい後回し」を理解すれば、具体的な対策も見えてきます\n。",
+        "face": 4
+      },
+      {
+        "id": 6,
+        "script": "まずは、先延ばしがどんな構造を持つのか基礎から押さえていきま\nしょう。",
+        "face": 8
+      }
+    ]
+  },
+  "segments": [
+    {
+      "id": 1,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "Di Noceraらは、先延ばしの原因を生物学的にも解明しようとしたの\nですわ。"
+      }
+    },
+    {
+      "id": 2,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal1",
+        "text": "なぜ生物学的視点が必要なのだ？"
+      }
+    },
+    {
+      "id": 3,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal2",
+        "text": "行動には環境だけでなく神経伝達物質の個人差が影響するからですわ。\nドーパミンは報酬期待や動機づけを担うのよ。"
+      }
+    },
+    {
+      "id": 4,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "だからドーパミンの違いで先延ばしに差が出るのだ？"
+      }
+    },
+    {
+      "id": 5,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "ええ。COMT遺伝子Val158Metは前頭前皮質のドーパミン分解量を\n左右しますの。"
+      }
+    },
+    {
+      "id": 6,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal3",
+        "text": "ValとMetでどう変わるのだ？"
+      }
+    },
+    {
+      "id": 7,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal4",
+        "text": "Met158型はCOMT活性が低く、前頭前皮質の基礎ドーパミンが高めで\nすわ。結果として計画や注意の維持が得意で、課題を早めに始めやすいのです\nのよ。"
+      }
+    },
+    {
+      "id": 8,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "対してVal158型は？"
+      }
+    },
+    {
+      "id": 9,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "Val158型はCOMT活性が高く、基礎ドーパミンが低めで、平常時の動\n機づけが弱い傾向がありますわ。ところがストレスや締め切りという強い外的\n報酬があると一時的に追い込みがかかるのですのよ。"
+      }
+    },
+    {
+      "id": 10,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "それが即時報酬バイアスとどう結びつくのだ？"
+      }
+    },
+    {
+      "id": 11,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "ドーパミン感受性が高い人は将来の小さな利益より現在の報酬に敏感ではあり\nませんわ。逆に感受性が低いと即時の刺激に頼りがちで、目先の快楽を選び先\n延ばししやすくなるのですわね。"
+      }
+    },
+    {
+      "id": 12,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal4",
+        "text": "つまり脳の報酬系の違いが行動の個人差を生むのだ？"
+      }
+    },
+    {
+      "id": 13,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "その通りですわ。Di Noceraらの結果は、遺伝的・神経生物学的要因\nが先延ばしの一端を説明し得ることを示唆しているのですのよ。"
+      }
+    },
+    {
+      "id": 14,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "ZhangとMaは長期間の実課題を使ったのですわよ。実課題なら報酬の時\n間的遅れが現実的に再現できて、被験者の選好が実際の行動にどう影響するか\n正確に測れるからですのよ。"
+      }
+    },
+    {
+      "id": 15,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "つまり短期の選択実験だとダメなのだ？"
+      }
+    },
+    {
+      "id": 16,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal2",
+        "text": "短期実験は理論的には有用でも、実生活の「待つ負担」や注意持続の要素が弱\nく、時間割引の推定にバイアスが生じやすいのですわね。長期課題は外的妥当\n性が高いのですのよ。"
+      }
+    },
+    {
+      "id": 17,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "先延ばししやすい人ほど将来報酬を過小評価するとはどういうことなのだ？"
+      }
+    },
+    {
+      "id": 18,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "観察された相関は、時間割引率が高い人は未来の利益を急速に割り引き短期的\n報酬を選びやすいことを示していますの。結果として「今やるより後で楽なこ\nとを選ぶ」行動が増えるのですわよ。"
+      }
+    },
+    {
+      "id": 19,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "でもそれって因果関係があるのだ？"
+      }
+    },
+    {
+      "id": 20,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal4",
+        "text": "因果の断定は慎重ですが、長期課題で一貫した関係が示されたことで、\n時間割引が先延ばし行動の一因である可能性が強まったのですわね。"
+      }
+    },
+    {
+      "id": 21,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "時間的不一致、タイムインコンシスタンシーって何なのだ？"
+      }
+    },
+    {
+      "id": 22,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "将来の自分と現在の自分で価値判断がずれる現象ですわ。今の自分は短期的快\n楽を過大評価し、将来の利益を過小評価するため、計画どおりに行動できなく\nなるのですのよ。"
+      }
+    },
+    {
+      "id": 23,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "それが先延ばしの心理の核心なのだ？"
+      }
+    },
+    {
+      "id": 24,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal2",
+        "text": "はい。時間割引が高いと将来利益の魅力が弱まり、現在の安心や快楽を優先し\nて行動を後回しにする。これがタイムインコンシスタンシーとして表れるので\nすわね。"
+      }
+    },
+    {
+      "id": 25,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "ずんだもん、今日は認知のゆがみについて論理的に整理するわよ。"
+      }
+    },
+    {
+      "id": 26,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal1",
+        "text": "お願いするのだ、めたん。"
+      }
+    },
+    {
+      "id": 27,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal2",
+        "text": "まずFlettらがPCIを用いた理由から説明するわね。"
+      }
+    },
+    {
+      "id": 28,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "なぜ質問票を使ったのだ？"
+      }
+    },
+    {
+      "id": 29,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "PCIは先延ばしに特化した思考様式を測る標準化された尺度だからですのよ\n。"
+      }
+    },
+    {
+      "id": 30,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "標準化されていると何が良いのだ？"
+      }
+    },
+    {
+      "id": 31,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal4",
+        "text": "比較可能で信頼性のあるデータが取れ、群間差や相関を統計的に検証できるか\nらですわ。"
+      }
+    },
+    {
+      "id": 32,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "次に、先延ばし傾向と否定的・完璧主義的自動思考の関連はどう説明するのだ\n？"
+      }
+    },
+    {
+      "id": 33,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "否定的自動思考は課題開始への心理的障壁を作るからですのよ。"
+      }
+    },
+    {
+      "id": 34,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "具体的にはどういう障壁なのだ？"
+      }
+    },
+    {
+      "id": 35,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal4",
+        "text": "「無能だ」「完璧でなければ意味がない」という評価は、失敗への恐怖や過度\nな基準を生み、行動開始を阻害しますわね。"
+      }
+    },
+    {
+      "id": 36,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "それが劣等感や不安、抑うつと結びつく理由は何なのだ？"
+      }
+    },
+    {
+      "id": 37,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "持続する否定的自己評価は自己効力感を低下させ、無力感や慢性的な不安を誘\n発しますのよ。"
+      }
+    },
+    {
+      "id": 38,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "その結果どうなるのだ？"
+      }
+    },
+    {
+      "id": 39,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal2",
+        "text": "結果として「どうせ自分はダメだ」と行動を放棄し、先延ばしが強化される負\nの循環が生じますわ。"
+      }
+    },
+    {
+      "id": 40,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "最後に、認知再構成が重要な理由は何なのだ？"
+      }
+    },
+    {
+      "id": 41,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "認知再構成は自動思考を意識化し、現実的で適応的な思考に置き換える手法で\nすのよ。"
+      }
+    },
+    {
+      "id": 42,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "それで先延ばしが減るのだ？"
+      }
+    },
+    {
+      "id": 43,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal4",
+        "text": "はい。思考が変われば自己効力感と行動意欲が回復し、課題開始の心理的障壁\nが低下するという因果が期待できますわ。"
+      }
+    },
+    {
+      "id": 44,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "SiroisとPychylが先延ばしを「短期的気分改善の優先」\nと定義したのは、観察的・実験的証拠で人が不快な感情を避けるために行動を\n遅らせる傾向が示されたからですわよ。"
+      }
+    },
+    {
+      "id": 45,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "不快感を避けると先延ばしになるのだ？"
+      }
+    },
+    {
+      "id": 46,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal2",
+        "text": "ええ。嫌な作業は不安やストレスを引き起こしますの。人はネガティブ感情を\n軽減する方向に自己調整を行い、目先の安堵を得るために「今やらない」\nを選ぶのですのよ。"
+      }
+    },
+    {
+      "id": 47,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "「今やらない」でホッとするのだ？"
+      }
+    },
+    {
+      "id": 48,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "はい。短期的には回避が報酬になりますわね。気分が即座に改善されるため、\n脳はその行為を強化してしまいますのよ。"
+      }
+    },
+    {
+      "id": 49,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "worry",
+        "text": "でも後で辛くなるのだ？"
+      }
+    },
+    {
+      "id": 50,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal4",
+        "text": "その通りですわ。回避は問題を先送りするだけで、期限や負担は増大します。\n結果として後悔や更なるストレスが蓄積し、当初より悪化した感情状態に陥る\nことが多いのですのよ。"
+      }
+    },
+    {
+      "id": 51,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "だから感情調節が重要なのだ？"
+      }
+    },
+    {
+      "id": 52,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "ええ。モデルは先延ばしを単なる意志力不足でなく、感情制御の失敗と見なし\nますの。ネガティブ感情への適応的対処法—認知的リフレーミングやマインド\nフルネス等—が先延ばし改善に不可欠だと示唆しているのですわ。"
+      }
+    },
+    {
+      "id": 53,
+      "type": "topic",
+      "title": "先延ばし対策の実践例",
+      "design": "1"
+    },
+    {
+      "id": 54,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "ずんだもん、今日は先延ばし対策の実践例を順に論理的に説明するわよ。"
+      }
+    },
+    {
+      "id": 55,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal1",
+        "text": "まず『5分だけ取り組む』は何が効くのだ？"
+      }
+    },
+    {
+      "id": 56,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal2",
+        "text": "小さな行動は開始コストを下げるのですのよ。行動の初動が最大のハードルで\n、5分ルールはそのハードルを壊すのですわね。"
+      }
+    },
+    {
+      "id": 57,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "normal2",
+        "text": "ポモドーロやタイムブロッキングはどう違うのだ？"
+      }
+    },
+    {
+      "id": 58,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "ポモドーロは短時間集中と休憩の反復で注意資源を維持する手法ですのよ。\nタイムブロッキングは予定を時間単位で先に確保し、意思決定負荷を減らすの\nですわね。どちらも自己制御の消耗を抑え、実行を容易にしますのよ。"
+      }
+    },
+    {
+      "id": 59,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "Soleimani RadらはなぜマインドフルネスのRCTを行ったのだ\n？"
+      }
+    },
+    {
+      "id": 60,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal4",
+        "text": "先延ばしは感情回避や注意散漫が根底にあるからですのよ。マインドフルネス\nは注意制御と感情認知を改善すると理論的に期待され、効果検証にはランダム\n化比較試験が最も因果を明確にできるのですわね。"
+      }
+    },
+    {
+      "id": 61,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "試験で訓練群はなぜ先延ばしが減ったのだ？"
+      }
+    },
+    {
+      "id": 62,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal1",
+        "text": "訓練で注意持続力が向上し、ネガティブ感情への自動反応が減ったためですの\nよ。これにより不快な課題に直面しても回避せずに着手できる確率が上がるの\nですわね。"
+      }
+    },
+    {
+      "id": 63,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "不安や罪悪感も減ったのはなぜなのだ？"
+      }
+    },
+    {
+      "id": 64,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal2",
+        "text": "マインドフルネスは感情を評価せずに観察する技法で、自己批判的な思考の反\n応性を下げますのよ。結果として不安・罪悪感の頻度と強度が低下し、\n先延ばしの負の循環が断たれるのですわね。"
+      }
+    },
+    {
+      "id": 65,
+      "type": "dialogue",
+      "script": {
+        "speaker": "2",
+        "face": "surprised",
+        "text": "つまり実践法は行動コスト低下と注意・感情制御の強化を狙っているのだ？"
+      }
+    },
+    {
+      "id": 66,
+      "type": "dialogue",
+      "script": {
+        "speaker": "1",
+        "face": "normal3",
+        "text": "その通りですわよ。短時間ルールや時間管理は開始と実行を支え、マインドフ\nルネスは内的要因を整える。両者を組み合わせるのが合理的な対策ですのよ。"
+      }
+    }
+  ],
+  "conclusion": {
+    "title": "先延ばしの複雑な要因と対策の重要性",
+    "text": [
+      {
+        "id": 1,
+        "type": "topic",
+        "title": "まとめに入るわよ"
+      },
+      {
+        "id": 2,
+        "type": "dialogue",
+        "script": {
+          "speaker": "1",
+          "face": "normal1",
+          "text": "いかがだったかしら、ずんだもん。まとめに入るわよ。"
+        }
+      },
+      {
+        "id": 3,
+        "type": "dialogue",
+        "script": {
+          "speaker": "2",
+          "face": "normal1",
+          "text": "複数の要因が絡む理由と介入が有効な理由、よくわかったのだ。"
+        }
+      },
+      {
+        "id": 4,
+        "type": "dialogue",
+        "script": {
+          "speaker": "1",
+          "face": "normal2",
+          "text": "先延ばしは一つの単純原因では説明できないのですのよ。"
+        }
+      },
+      {
+        "id": 5,
+        "type": "dialogue",
+        "script": {
+          "speaker": "2",
+          "face": "surprised",
+          "text": "脳の報酬感受性や未来評価、思考の癖、感情調節が互いに影響するのだ？"
+        }
+      },
+      {
+        "id": 6,
+        "type": "dialogue",
+        "script": {
+          "speaker": "1",
+          "face": "normal3",
+          "text": "その通り。要素同士が増幅し合い、個々の表れ方を複雑にするのですわね。"
+        }
+      },
+      {
+        "id": 7,
+        "type": "dialogue",
+        "script": {
+          "speaker": "2",
+          "face": "surprised",
+          "text": "だから対策は人それぞれ、試す価値があるのだ？"
+        }
+      },
+      {
+        "id": 8,
+        "type": "dialogue",
+        "script": {
+          "speaker": "1",
+          "face": "normal4",
+          "text": "ええ。マインドフルネスは注意力や感情調整を鍛え、他の手法と組めば相乗効\n果を生むことが示されていますのよ。"
+        }
+      },
+      {
+        "id": 9,
+        "type": "dialogue",
+        "script": {
+          "speaker": "2",
+          "face": "surprised",
+          "text": "まずは小さな方法を一つ試してみるのだ？"
+        }
+      },
+      {
+        "id": 10,
+        "type": "dialogue",
+        "script": {
+          "speaker": "1",
+          "face": "normal1",
+          "text": "そうして成果を観察し、調整を続けてくださいませ。ご視聴ありがとうござい\nましたわよ。"
+        }
+      }
+    ]
+  }
+}
